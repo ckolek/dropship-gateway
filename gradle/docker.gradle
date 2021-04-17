@@ -1,0 +1,19 @@
+def dockerRegistryUrl = System.getenv('DOCKER_REGISTRY_URL') ?: findProperty('dockerRegistryUrl')
+
+apply plugin: 'com.palantir.docker'
+
+docker {
+  name = "ecommerce/dropship-gateway-${project.name}"
+  if (project.version.toString().endsWith('-SNAPSHOT')) {
+    tag 'current', "${dockerRegistryUrl}/$name:${project.version}-$branchSlug".toLowerCase()
+  } else {
+    tag 'latest', "${dockerRegistryUrl}/$name:latest".toLowerCase()
+    tag 'current', "${dockerRegistryUrl}/$name:${project.version}".toLowerCase()
+  }
+  dependsOn unpack
+  copySpec.from(tasks.unpack.outputs).into('dependency')
+  files 'run.sh'
+  buildArgs([
+      'DEPENDENCY': "dependency"
+  ])
+}

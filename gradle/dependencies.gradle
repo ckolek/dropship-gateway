@@ -1,0 +1,18 @@
+ext {
+  versions = [
+      awsSdk: '1.11.228',
+      graphqlJavaTools: '5.2.4',
+      graphqlSpringBootStarter: '5.0.2',
+      guava: '27.1-jre',
+      postgresql: '42.2.5'
+  ]
+
+  boms = [
+      awsSdk: "com.amazonaws:aws-java-sdk-bom:${versions.awsSdk}"
+  ]
+
+  libraries = [
+      guava: "com.google.guava:guava:${versions.guava}",
+      postgresql: "org.postgresql:postgresql:${versions.postgresql}"
+  ]
+}

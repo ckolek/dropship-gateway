@@ -1,0 +1,17 @@
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+  }
+}
+
+buildscript {
+  repositories {
+    gradlePluginPortal()
+  }
+}
+
+rootProject.name = 'dropship-gateway'
+
+include 'api'
+include 'api-model'
+include 'core'

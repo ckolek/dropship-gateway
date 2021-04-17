@@ -1,0 +1,49 @@
+buildscript {
+  apply from: "$rootDir/gradle/dependencies.gradle"
+
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+  }
+}
+
+plugins {
+  id 'idea'
+  id 'nebula.nebula-release' version '4.0.1'
+  id 'io.freefair.lombok' version '6.0.0-m2'
+  id 'org.springframework.boot' version '2.4.5'
+  id 'com.palantir.docker' version '0.26.0'
+}
+
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+group 'me.kolek.ecommerce.dsgw'
+
+allprojects {
+  repositories {
+    mavenCentral()
+  }
+}
+
+subprojects {
+  apply plugin: 'java'
+  apply plugin: 'io.freefair.lombok'
+
+  version = rootProject.version
+
+  sourceCompatibility = JavaVersion.VERSION_11
+  targetCompatibility = JavaVersion.VERSION_11
+
+  dependencies {
+    implementation enforcedPlatform(SpringBootPlugin.BOM_COORDINATES)
+    implementation enforcedPlatform(boms.awsSdk)
+    implementation libraries.guava
+
+    testImplementation "junit:junit"
+  }
+}
+
+configure(subprojects.findAll { it.name in ['api'] }) {
+  apply from: "$rootDir/gradle/springBoot.gradle"
+  apply from: "$rootDir/gradle/docker.gradle"
+}
