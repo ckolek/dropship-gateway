@@ -34,16 +34,31 @@ subprojects {
   sourceCompatibility = JavaVersion.VERSION_11
   targetCompatibility = JavaVersion.VERSION_11
 
+  compileJava {
+    options.compilerArgs << '-parameters'
+  }
+
   dependencies {
     implementation enforcedPlatform(SpringBootPlugin.BOM_COORDINATES)
-    implementation enforcedPlatform(boms.awsSdk)
     implementation libraries.guava
+    implementation libraries.javaxInject
 
     testImplementation "junit:junit"
   }
 }
 
-configure(subprojects.findAll { it.name in ['api'] }) {
+configure(subprojects.findAll { it.name in ['api', 'worker'] }) {
   apply from: "$rootDir/gradle/springBoot.gradle"
   apply from: "$rootDir/gradle/docker.gradle"
+
+  dependencies {
+    implementation project(':core')
+
+    implementation libraries.springBootStarterActuator
+    implementation libraries.springBootStarterWeb
+
+    testImplementation testLibraries.springBootStarterTest
+
+    runtimeOnly libraries.postgresql
+  }
 }

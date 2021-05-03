@@ -1,0 +1,15 @@
+type OrderActionResult {
+    orderId: ID
+    status: OrderActionStatus!
+    reasons: [OrderActionResultReason!]
+}
+
+enum OrderActionStatus {
+    PENDING,
+    SUCCESSFUL,
+    FAILED
+}
+
+type OrderActionResultReason {
+    description: String!
+}

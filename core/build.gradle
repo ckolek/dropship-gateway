@@ -1,0 +1,19 @@
+apply plugin: 'java-library'
+
+dependencies {
+  api project(':api-model')
+
+  implementation libraries.caffeine
+  implementation libraries.mapstruct
+  api libraries.springBootStarterDataJpa
+
+  annotationProcessor libraries.mapstructProcessor
+}
+
+compileJava {
+  options.compilerArgs += [
+      '-Amapstruct.defaultComponentModel=spring',
+      '-Amapstruct.suppressGeneratorTimestamp=true',
+      '-Amapstruct.suppressGeneratorVersionInfoComment=true'
+  ]
+}

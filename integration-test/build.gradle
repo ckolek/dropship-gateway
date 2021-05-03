@@ -1,0 +1,12 @@
+
+dependencies {
+  implementation project(':api-model')
+  implementation testLibraries.assertjCore
+  implementation testLibraries.cucumberCore
+  implementation testLibraries.cucumberJava
+  implementation testLibraries.cucumberJunit
+  implementation testLibraries.cucumberPicocontainer
+  implementation libraries.jacksonDatabind
+  implementation testLibraries.junitJupiterApi
+  implementation testLibraries.junitJupiterEngine
+}

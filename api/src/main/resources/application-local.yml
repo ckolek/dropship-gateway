@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dsgw
+    password: dsgw
+
+aws:
+  sqs:
+    region: us-east-1
+    endpoint:
+      service-endpoint: http://localhost:4566
+      signing-region: us-east-1

@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+  database:
+    image: postgres:12-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: dsgw
+      POSTGRES_PASSWORD: dsgw
+  flyway:
+    build:
+      ../database
+    environment:
+      HOST: database
+    depends_on:
+      - database
+  localstack:
+    image: localstack/localstack:0.11.6
+    ports:
+      - "4566:4566"
+    environment:
+      SERVICES: sqs
+  aws_setup:
+    build:
+      ./aws_setup/
+    env_file:
+      - ./aws_setup/.env
+    environment:
+      AWS_HOST: localstack
+      AWS_PORT: 4566
+    depends_on:
+      - localstack

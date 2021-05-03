@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: local
+  datasource:
+    username: dsgw
+  jackson:
+    default-property-inclusion: non_absent
+
+server:
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    me.kolek: DEBUG

@@ -1,0 +1,9 @@
+dependencies {
+  implementation project(':aws-support')
+  implementation project(':aws-sqs-processing')
+  implementation project(':core')
+  implementation project(':internal-model')
+  implementation libraries.camelSpringBootStarter
+  implementation libraries.camelSpringBootAwsSqsStarter
+  implementation libraries.camelSpringBootJacksonStarter
+}

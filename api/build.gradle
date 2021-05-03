@@ -1,0 +1,6 @@
+dependencies {
+  implementation project(':aws-support')
+  implementation project(':internal-model')
+
+  implementation libraries.graphqlSpringBootStarter
+}

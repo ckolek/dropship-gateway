@@ -1,18 +1,58 @@
 ext {
   versions = [
-      awsSdk: '1.11.228',
-      graphqlJavaTools: '5.2.4',
-      graphqlSpringBootStarter: '5.0.2',
-      guava: '27.1-jre',
-      postgresql: '42.2.5'
-  ]
-
-  boms = [
-      awsSdk: "com.amazonaws:aws-java-sdk-bom:${versions.awsSdk}"
+      awsSdk     : '1.11.1004',
+      caffeine   : '3.0.1',
+      camel      : '3.8.0',
+      graphql    : '11.0.0',
+      guava      : '27.1-jre',
+      jackson    : '2.12.3',
+      javaxInject: '1',
+      log4j      : '2.14.1',
+      mapstruct  : '1.4.2.Final',
+      postgresql : '42.2.5',
+      slf4j      : '1.7.30',
+      springBoot : '2.4.5'
   ]
 
   libraries = [
-      guava: "com.google.guava:guava:${versions.guava}",
-      postgresql: "org.postgresql:postgresql:${versions.postgresql}"
+      awsSdkSqs                       : "com.amazonaws:aws-java-sdk-sqs:${versions.awsSdk}",
+      caffeine                        : "com.github.ben-manes.caffeine:caffeine:${versions.caffeine}",
+      camelJackson                    : "org.apache.camel:camel-jackson:${versions.camel}",
+      camelSpringBootStarter          : "org.apache.camel.springboot:camel-spring-boot-starter:${versions.camel}",
+      camelSpringBootAwsSqsStarter    : "org.apache.camel.springboot:camel-aws-sqs-starter:${versions.camel}",
+      camelSpringBootJacksonStarter   : "org.apache.camel.springboot:camel-jackson-starter:${versions.camel}",
+      graphqlSpringBootStarter        : "com.graphql-java-kickstart:graphql-spring-boot-starter:${versions.graphql}",
+      guava                           : "com.google.guava:guava:${versions.guava}",
+      jacksonDatabind                 : "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
+      javaxInject                     : "javax.inject:javax.inject:${versions.javaxInject}",
+      log4jApi                        : "org.apache.logging.log4j:log4j-api:${versions.log4j}",
+      log4jCore                       : "org.apache.logging.log4j:log4j-core:${versions.log4j}",
+      log4jSlf4jImpl                  : "org.apache.logging.log4j:log4j-slf4j-impl:${versions.log4j}",
+      mapstruct                       : "org.mapstruct:mapstruct:${versions.mapstruct}",
+      mapstructProcessor              : "org.mapstruct:mapstruct-processor:${versions.mapstruct}",
+      postgresql                      : "org.postgresql:postgresql:${versions.postgresql}",
+      slf4jApi                        : "org.slf4j:slf4j-api:${versions.slf4j}",
+      springBootConfigurationProcessor: "org.springframework.boot:spring-boot-configuration-processor:${versions.springBoot}",
+      springBootStarterActuator       : "org.springframework.boot:spring-boot-starter-actuator",
+      springBootStarterDataJpa        : "org.springframework.boot:spring-boot-starter-data-jpa",
+      springBootStarterIntegration    : "org.springframework.boot:spring-boot-starter-integration",
+      springBootStarterWeb            : "org.springframework.boot:spring-boot-starter-web"
+  ]
+
+  testVersions = [
+      assertj : '3.19.0',
+      cucumber: '6.10.3',
+      junit   : '5.7.1'
+  ]
+
+  testLibraries = [
+      assertjCore          : "org.assertj:assertj-core:${testVersions.assertj}",
+      cucumberCore         : "io.cucumber:cucumber-core:${testVersions.cucumber}",
+      cucumberJava         : "io.cucumber:cucumber-java:${testVersions.cucumber}",
+      cucumberJunit        : "io.cucumber:cucumber-junit:${testVersions.cucumber}",
+      cucumberPicocontainer: "io.cucumber:cucumber-picocontainer:${testVersions.cucumber}",
+      junitJupiterApi      : "org.junit.jupiter:junit-jupiter-api:${testVersions.junit}",
+      junitJupiterEngine   : "org.junit.jupiter:junit-jupiter-engine:${testVersions.junit}",
+      springBootStarterTest: "org.springframework.boot:spring-boot-starter-test"
   ]
 }

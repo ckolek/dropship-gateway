@@ -1,0 +1,31 @@
+extend type Query {
+    supplier(id: ID, name: String) : Supplier
+
+    suppliers(
+        statuses: [SupplierStatus!],
+        pageSize: Int,
+        pageOffset: Int) : SupplierConnection!
+}
+
+type Supplier {
+    id: ID!
+    name: String!
+    status: SupplierStatus!
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}
+
+enum SupplierStatus {
+    INACTIVE,
+    ACTIVE
+}
+
+type SupplierConnection implements Connection {
+    edges: [SupplierEdge!]!
+    pageInfo: PageInfo!
+}
+
+type SupplierEdge implements Edge {
+    cursor: ID!
+    node: Supplier!
+}

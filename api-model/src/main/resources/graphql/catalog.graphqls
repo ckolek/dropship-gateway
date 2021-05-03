@@ -1,0 +1,106 @@
+extend type Query {
+    catalog(id: ID!) : Catalog
+
+    catalogs(
+        pageSize: Int,
+        pageOffset: Int) : CatalogConnection
+
+    catalogEntry(id: ID!) : CatalogEntry
+
+    catalogEntries(
+        sku: String,
+        gtin: String,
+        upc: String,
+        ean: String,
+        isbn: String,
+        mpn: String,
+        manufacturer: String,
+        brand: String,
+        pageSize: Int,
+        pageOffset: Int) : CatalogEntryConnection!
+}
+
+extend type Supplier {
+    catalogs(
+        pageSize: Int,
+        pageOffset: Int) : CatalogConnection!
+}
+
+type Catalog {
+    id: ID!
+    supplier: Supplier!
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+
+    entry(sku: String!) : CatalogEntry
+
+    entries(
+        includeOptions: Boolean,
+        pageSize: Int,
+        pageOffset: Int) : CatalogEntryConnection!
+}
+
+type CatalogConnection implements Connection {
+    edges: [CatalogEdge!]!
+    pageInfo: PageInfo!
+}
+
+type CatalogEdge implements Edge {
+    cursor: ID!
+    node: Catalog!
+}
+
+interface CatalogEntry {
+    id: ID!
+    sku: String!
+    gtin: String
+    upc: String
+    ean: String
+    isbn: String
+    mpn: String
+    manufacturer: String
+    brand: String
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}
+
+type CatalogEntryConnection implements Connection {
+    edges: [CatalogEntryEdge!]!
+    pageInfo: PageInfo!
+}
+
+type CatalogEntryEdge implements Edge {
+    cursor: ID!
+    node: CatalogEntry!
+}
+
+type CatalogItem implements CatalogEntry {
+    id: ID!
+    catalog: Catalog!
+    sku: String!
+    gtin: String
+    upc: String
+    ean: String
+    isbn: String
+    mpn: String
+    manufacturer: String
+    brand: String
+    options: [CatalogItemOption!]
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}
+
+type CatalogItemOption implements CatalogEntry {
+    id: ID!
+    item: CatalogItem!
+    sku: String!
+    gtin: String
+    upc: String
+    ean: String
+    isbn: String
+    mpn: String
+    manufacturer: String
+    brand: String
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}

@@ -1,0 +1,59 @@
+extend type Query {
+    order(id: ID, orderNumber: String) : Order
+
+    orders(
+        customerOrderNumber: String,
+        supplierId: String,
+        warehouseId: String,
+        statuses: [OrderStatus!],
+        pageSize: Int,
+        pageOffset: Int) : OrderConnection
+}
+
+type Order {
+    id: ID!
+    orderNumber: String!
+    customerOrderNumber: String
+    warehouse: Warehouse!
+    contact: Contact!
+    address: Address!
+    items: [OrderItem!]!
+    serviceLevel: ServiceLevel
+    status: OrderStatus,
+    timeOrdered: DateTime!
+    timeReleased: DateTime!
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}
+
+enum OrderStatus {
+    NEW,
+    ACKNOWLEDGED,
+    SHIPPED_PARTIAL,
+    SHIPPED,
+    INVOICED,
+    CANCELLED
+}
+
+type OrderConnection implements Connection {
+    edges: [OrderEdge!]!
+    pageInfo: PageInfo!
+}
+
+type OrderEdge implements Edge {
+    cursor: ID!
+    node: Order!
+}
+
+type OrderItem {
+    id: ID!
+    order: Order!
+    lineNumber: Int!
+    catalogEntry: CatalogEntry!
+    quantity: Int!
+    customization: String
+    expectedShipDate: DateTime
+    expectedDeliveryDate: DateTime
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}

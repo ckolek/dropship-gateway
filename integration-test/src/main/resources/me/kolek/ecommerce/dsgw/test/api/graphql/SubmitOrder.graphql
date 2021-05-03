@@ -1,0 +1,5 @@
+mutation SubmitOrder($request: SubmitOrderRequest!) {
+    submitOrder(request: $request) {
+        id
+    }
+}

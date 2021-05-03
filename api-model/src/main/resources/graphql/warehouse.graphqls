@@ -1,0 +1,46 @@
+extend type Query {
+    warehouse(id: ID, code: String) : Warehouse
+
+    warehouses(
+        supplierId: ID,
+        supplierCode: String,
+        statuses: [WarehouseStatus!],
+        pageSize: Int,
+        pageOffset: Int) : WarehouseConnection!
+}
+
+extend type Supplier {
+    warehouse(supplierCode: String!) : Warehouse
+
+    warehouses(
+        statuses: [WarehouseStatus!],
+        pageSize: Int,
+        pageOffset: Int) : WarehouseConnection!
+}
+
+type Warehouse {
+    id: ID!
+    supplier: Supplier!
+    code: String!
+    supplierCode: String
+    description: String
+    status: WarehouseStatus!
+    address: Address!
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}
+
+enum WarehouseStatus {
+    INACTIVE,
+    ACTIVE
+}
+
+type WarehouseConnection implements Connection {
+    edges: [WarehouseEdge!]!
+    pageInfo: PageInfo!
+}
+
+type WarehouseEdge implements Edge {
+    cursor: ID!
+    node: Warehouse!
+}

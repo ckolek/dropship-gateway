@@ -1,0 +1,51 @@
+package me.kolek.ecommerce.dsgw.model;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Version;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.UpdateTimestamp;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class ServiceLevel {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false, updatable = false)
+  private Long id;
+
+  @Column(name = "mode", nullable = false, length = 64)
+  private String mode;
+
+  @ManyToOne
+  @JoinColumn(name = "carrier_id", nullable = false)
+  private Carrier carrier;
+
+  @CreationTimestamp
+  @Column(name = "time_created", nullable = false)
+  private OffsetDateTime timeCreated;
+
+  @UpdateTimestamp
+  @Column(name = "time_updated", nullable = false)
+  private OffsetDateTime timeUpdated;
+
+  @Version
+  @Column(name = "record_version", nullable = false)
+  private Short recordVersion;
+}

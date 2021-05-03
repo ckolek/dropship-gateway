@@ -1,0 +1,50 @@
+extend type Query {
+    inventory(
+        supplierId: ID,
+        catalogId: ID,
+        catalogEntryId: ID,
+        warehouseId: ID,
+        pageSize: Int,
+        pageOffset: Int) : InventoryConnection!
+}
+
+# graphql-tools bug: this overrides the existing CatalogEntry definition
+#extend interface CatalogEntry {
+#    inventory(
+#        warehouseId: ID,
+#        pageSize: Int,
+#        pageOffset: Int) : InventoryConnection!
+#}
+
+extend type CatalogItem {
+    inventory(
+        warehouseId: ID,
+        pageSize: Int,
+        pageOffset: Int) : InventoryConnection!
+}
+
+extend type CatalogItemOption {
+    inventory(
+        warehouseId: ID,
+        pageSize: Int,
+        pageOffset: Int) : InventoryConnection!
+}
+
+type Inventory {
+    id: ID!
+    catalogEntry : CatalogEntry!
+    warehouse : Warehouse!
+    quantityAvailable : Int!
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}
+
+type InventoryConnection implements Connection {
+    edges: [InventoryEdge!]!
+    pageInfo: PageInfo!
+}
+
+type InventoryEdge implements Edge {
+    cursor: ID!
+    node: Inventory!
+}

@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dsgw
+    password: dsgw
+
+server:
+  port: 8081
+
+aws:
+  sqs:
+    endpoint:
+      service-endpoint: http://localhost:4566
+    processing:
+      queues:
+        order-actions:
+          queue-name: order-actions
+          poll-interval: 1s
+          max-number-of-messages: 10
+          wait-time-seconds: 5s
+          attribute-names:
+            - RequestID
+            - ResponseQueueURL

@@ -1,0 +1,46 @@
+extend type Query {
+    carrier(id: ID, name: String) : Carrier
+
+    carriers(
+        pageSize: Int,
+        pageOffset: Int) : CarrierConnection
+
+    serviceLevel(id: ID) : ServiceLevel
+}
+
+type Carrier {
+    id: ID!
+    name: String!
+
+    serviceLevel(mode: String!) : ServiceLevel
+
+    serviceLevels(
+        pageSize: Int,
+        pageOffset: Int) : ServiceLevelConnection
+}
+
+type CarrierConnection implements Connection {
+    edges: [CarrierEdge!]!
+    pageInfo: PageInfo!
+}
+
+type CarrierEdge implements Edge {
+    cursor: ID!
+    node: Carrier!
+}
+
+type ServiceLevel {
+    id: ID!
+    carrier: Carrier!
+    mode: String!
+}
+
+type ServiceLevelConnection implements Connection {
+    edges: [ServiceLevelEdge!]!
+    pageInfo: PageInfo!
+}
+
+type ServiceLevelEdge implements Edge {
+    cursor: ID!
+    node: ServiceLevel!
+}

@@ -1,0 +1,15 @@
+type PageInfo {
+    count: Int!
+    totalCount: Int!
+    pageNumber: Int!
+    totalPages: Int!
+}
+
+interface Connection {
+    edges: [Edge!]!
+    pageInfo: PageInfo!
+}
+
+interface Edge {
+    cursor: ID!
+}

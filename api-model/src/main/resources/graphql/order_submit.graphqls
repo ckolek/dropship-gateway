@@ -1,0 +1,40 @@
+extend type Mutation {
+    submitOrder(request: SubmitOrderRequest!, async: Boolean) : OrderActionResult!
+}
+
+input SubmitOrderRequest {
+    orderNumber: String!
+    customerOrderNumber: String
+    warehouseCode: String!
+    recipient: SubmitOrderRecipient!
+    items: [SubmitOrderItem!]!
+    carrierName: String
+    carrierMode: String
+    timeOrdered: DateTime!
+    timeReleased: DateTime!
+}
+
+input SubmitOrderRecipient {
+    name: String!
+    phone: String
+    email: String
+    line1: String!
+    line2: String
+    line3: String
+    city: String!
+    state: String
+    province: String
+    postalCode: String
+    country: String!
+}
+
+input SubmitOrderItem {
+    sku: String
+    gtin: String
+    upc: String
+    ean: String
+    isbn: String
+    quantity: Int!
+    expectedShipDate: DateTime
+    expectedDeliveryDate: DateTime
+}
