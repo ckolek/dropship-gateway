@@ -6,11 +6,12 @@ import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.ServiceLevelDTO;
 import me.kolek.ecommerce.dsgw.model.ServiceLevel;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(uses = {UuidMapper.class, CarrierMapper.class})
+@Mapper(uses = {UuidMapper.class, CarrierMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class ServiceLevelMapper {
 
   private final String FIELD__CARRIER = "carrier";

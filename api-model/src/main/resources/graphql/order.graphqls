@@ -19,9 +19,12 @@ type Order {
     address: Address!
     items: [OrderItem!]!
     serviceLevel: ServiceLevel
-    status: OrderStatus,
+    status: OrderStatus
+    cancelCode: OrderCancelCode
+    cancelReason: String
     timeOrdered: DateTime!
     timeReleased: DateTime!
+    timeCancelled: DateTime
     timeCreated: DateTime!
     timeUpdated: DateTime!
 }
@@ -52,8 +55,19 @@ type OrderItem {
     catalogEntry: CatalogEntry!
     quantity: Int!
     customization: String
+    cancelCode: OrderCancelCode
+    cancelReason: String
     expectedShipDate: DateTime
     expectedDeliveryDate: DateTime
+    timeCancelled: DateTime!
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}
+
+type OrderCancelCode {
+    id: ID!
+    code: String!
+    description: String!
     timeCreated: DateTime!
     timeUpdated: DateTime!
 }

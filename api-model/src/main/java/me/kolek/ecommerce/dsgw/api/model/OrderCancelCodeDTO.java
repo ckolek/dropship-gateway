@@ -10,20 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
-public class WarehouseDTO {
-
+public class OrderCancelCodeDTO {
   private String id;
-  private SupplierDTO supplier;
   private String code;
-  private String supplierCode;
   private String description;
-  private Status status;
-  private AddressDTO address;
   private OffsetDateTime timeCreated;
   private OffsetDateTime timeUpdated;
-
-  public enum Status {
-    INACTIVE,
-    ACTIVE
-  }
 }

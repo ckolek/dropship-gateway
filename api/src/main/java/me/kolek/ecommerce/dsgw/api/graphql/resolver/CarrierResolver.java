@@ -1,8 +1,6 @@
 package me.kolek.ecommerce.dsgw.api.graphql.resolver;
 
 import graphql.kickstart.tools.GraphQLResolver;
-import java.util.List;
-import java.util.Optional;
 import me.kolek.ecommerce.dsgw.api.model.CarrierDTO;
 import me.kolek.ecommerce.dsgw.api.model.ServiceLevelConnection;
 import me.kolek.ecommerce.dsgw.api.model.ServiceLevelDTO;

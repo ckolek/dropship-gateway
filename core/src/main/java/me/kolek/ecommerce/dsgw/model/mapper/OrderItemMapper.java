@@ -6,13 +6,14 @@ import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.OrderItemDTO;
 import me.kolek.ecommerce.dsgw.model.OrderItem;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(uses = {UuidMapper.class, OrderMapper.class, CatalogEntryMapper.class, ContactMapper.class,
-    AddressMapper.class})
+    AddressMapper.class, OrderCancelCodeMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class OrderItemMapper {
 
   private static final String FIELD__ORDER = "order";

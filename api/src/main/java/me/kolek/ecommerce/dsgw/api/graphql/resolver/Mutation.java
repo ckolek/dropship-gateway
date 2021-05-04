@@ -4,9 +4,11 @@ import graphql.kickstart.tools.GraphQLMutationResolver;
 import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
+import me.kolek.ecommerce.dsgw.api.model.action.order.cancel.CancelOrderRequest;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRequest;
 import me.kolek.ecommerce.dsgw.api.service.OrderActionService;
-import me.kolek.ecommerce.dsgw.internal.model.order.action.submit.SubmitOrderAction;
+import me.kolek.ecommerce.dsgw.internal.model.order.action.CancelOrderAction;
+import me.kolek.ecommerce.dsgw.internal.model.order.action.SubmitOrderAction;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,5 +20,11 @@ public class Mutation implements GraphQLMutationResolver {
   public OrderActionResult submitOrder(SubmitOrderRequest request, Boolean async) throws Exception {
     return orderActionService
         .processOrderAction(SubmitOrderAction.builder().request(request).build());
+  }
+
+  public OrderActionResult cancelOrder(String orderNumber, CancelOrderRequest request,
+      Boolean async) throws Exception {
+    return orderActionService.processOrderAction(
+        CancelOrderAction.builder().orderNumber(orderNumber).request(request).build());
   }
 }

@@ -1,4 +1,4 @@
-package me.kolek.ecommerce.dsgw.api.model;
+package me.kolek.ecommerce.dsgw.api.model.action.order.cancel;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
-public class ContactDTO {
-  private String name;
-  private String phone;
-  private String email;
+public class CancelOrderRequest {
+  private String cancelCode;
+  private String cancelReason;
 }

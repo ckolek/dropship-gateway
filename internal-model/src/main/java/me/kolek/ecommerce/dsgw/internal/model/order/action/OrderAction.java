@@ -5,19 +5,18 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
-import me.kolek.ecommerce.dsgw.internal.model.order.action.submit.SubmitOrderAction;
 
+@AllArgsConstructor
 @NoArgsConstructor
+@Data
 @SuperBuilder
-@Getter
-@Setter
 @ToString
 @EqualsAndHashCode
 @JsonTypeInfo(
@@ -27,10 +26,12 @@ import me.kolek.ecommerce.dsgw.internal.model.order.action.submit.SubmitOrderAct
     defaultImpl = OrderAction.class
 )
 @JsonSubTypes({
-    @Type(name = SubmitOrderAction.TYPE, value = SubmitOrderAction.class)
+    @Type(name = SubmitOrderAction.TYPE, value = SubmitOrderAction.class),
+    @Type(name = CancelOrderAction.TYPE, value = CancelOrderAction.class)
 })
 public abstract class OrderAction<T> {
   private String orderId;
+  private String orderNumber;
   private T request;
 
   public abstract String getType();

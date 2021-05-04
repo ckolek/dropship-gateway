@@ -3,19 +3,12 @@ package me.kolek.ecommerce.dsgw.api.model.action.order.submit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Builder
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
 public class SubmitOrderRecipient {
   private String name;
   private String phone;

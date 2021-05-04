@@ -6,12 +6,13 @@ import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.WarehouseDTO;
 import me.kolek.ecommerce.dsgw.model.Warehouse;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(uses = {UuidMapper.class, SupplierMapper.class})
+@Mapper(uses = {UuidMapper.class, SupplierMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class WarehouseMapper {
 
   private static final String FIELD__SUPPLIER = "supplier";

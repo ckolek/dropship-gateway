@@ -1,21 +1,16 @@
-package me.kolek.ecommerce.dsgw.internal.model.order.action.submit;
+package me.kolek.ecommerce.dsgw.internal.model.order.action;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRequest;
-import me.kolek.ecommerce.dsgw.internal.model.order.action.OrderAction;
 
-@NoArgsConstructor
+@AllArgsConstructor
+@Data
 @SuperBuilder
-@Getter
-@Setter
-@ToString
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class SubmitOrderAction extends OrderAction<SubmitOrderRequest> {
 

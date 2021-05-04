@@ -3,20 +3,20 @@ package me.kolek.ecommerce.dsgw.model.mapper;
 import static me.kolek.ecommerce.dsgw.model.mapper.MapperUtil.mapIfSelected;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import me.kolek.ecommerce.dsgw.api.model.CarrierDTO;
 import me.kolek.ecommerce.dsgw.api.model.ServiceLevelDTO;
 import me.kolek.ecommerce.dsgw.model.Carrier;
 import me.kolek.ecommerce.dsgw.model.ServiceLevel;
-import me.kolek.ecommerce.dsgw.model.mapper.MappingFieldSelection.SelectedField;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(uses = {UuidMapper.class, ServiceLevelMapper.class})
+@Mapper(uses = {UuidMapper.class,
+    ServiceLevelMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class CarrierMapper {
 
   private static final String FIELD__SERVICE_LEVELS = "serviceLevels";

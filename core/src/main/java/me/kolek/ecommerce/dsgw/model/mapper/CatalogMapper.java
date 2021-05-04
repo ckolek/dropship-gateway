@@ -9,12 +9,14 @@ import me.kolek.ecommerce.dsgw.api.model.CatalogItemDTO;
 import me.kolek.ecommerce.dsgw.model.Catalog;
 import me.kolek.ecommerce.dsgw.model.CatalogItem;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(uses = {UuidMapper.class, CatalogEntryMapper.class})
+@Mapper(uses = {UuidMapper.class,
+    CatalogEntryMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class CatalogMapper {
 
   private static final String FIELD__SUPPLIER = "supplier";

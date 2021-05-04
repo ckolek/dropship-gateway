@@ -2,7 +2,6 @@ package me.kolek.ecommerce.dsgw.api.graphql.resolver;
 
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import graphql.schema.DataFetchingEnvironment;
-import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;

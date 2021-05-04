@@ -1,12 +1,11 @@
 package me.kolek.ecommerce.dsgw.worker.processor;
 
 import javax.inject.Inject;
-import lombok.RequiredArgsConstructor;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
-import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.Reason;
+import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.OrderActionResultBuilder;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderItem;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRequest;
-import me.kolek.ecommerce.dsgw.internal.model.order.action.submit.SubmitOrderAction;
+import me.kolek.ecommerce.dsgw.internal.model.order.action.SubmitOrderAction;
 import me.kolek.ecommerce.dsgw.model.Address;
 import me.kolek.ecommerce.dsgw.model.CatalogItem;
 import me.kolek.ecommerce.dsgw.model.Contact;
@@ -20,13 +19,21 @@ import me.kolek.ecommerce.dsgw.repository.OrderRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor(onConstructor__ = @Inject)
-public class SubmitOrderActionProcessor implements OrderActionProcessor<SubmitOrderAction> {
+public class SubmitOrderActionProcessor extends BaseOrderActionProcessor<SubmitOrderAction> {
 
-  private final OrderRepository orderRepository;
   private final WarehouseRegistry warehouseRegistry;
   private final CatalogItemRepository catalogItemRepository;
   private final CarrierRegistry carrierRegistry;
+
+  @Inject
+  public SubmitOrderActionProcessor(OrderRepository orderRepository,
+      WarehouseRegistry warehouseRegistry, CatalogItemRepository catalogItemRepository,
+      CarrierRegistry carrierRegistry) {
+    super(orderRepository);
+    this.warehouseRegistry = warehouseRegistry;
+    this.catalogItemRepository = catalogItemRepository;
+    this.carrierRegistry = carrierRegistry;
+  }
 
   @Override
   public String getActionType() {
@@ -34,60 +41,48 @@ public class SubmitOrderActionProcessor implements OrderActionProcessor<SubmitOr
   }
 
   @Override
-  public OrderActionResult process(SubmitOrderAction action) {
-    var request = action.getRequest();
+  protected void process(SubmitOrderAction action, Order order, OrderActionResultBuilder result) {
+    SubmitOrderRequest request = action.getRequest();
 
-    if (orderRepository.existsByExternalId(request.getOrderNumber())) {
-      var result = OrderActionResult.builder();
-      fail(result, "order " + request.getOrderNumber() + " already exists");
-      return result.build();
-    }
-
-    var resultBuilder = OrderActionResult.builder()
-        .status(OrderActionResult.Status.SUCCESSFUL);
-
-    Order order = process(request, resultBuilder);
-
-    var result = resultBuilder.build();
-
-    if (result.getStatus() == OrderActionResult.Status.SUCCESSFUL) {
-      order = orderRepository.save(order);
-      result.setOrderId(order.getId().toString());
-    }
-
-    return result;
-  }
-
-  private Order process(SubmitOrderRequest request,
-      OrderActionResult.OrderActionResultBuilder result) {
-    var order = Order.builder()
-        .externalId(request.getOrderNumber())
-        .customerOrderNumber(request.getCustomerOrderNumber())
-        .contact(Contact.builder()
-            .name(request.getRecipient().getName())
-            .email(request.getRecipient().getEmail())
-            .phone(request.getRecipient().getPhone())
-            .build())
-        .address(Address.builder()
-            .line1(request.getRecipient().getLine1())
-            .line2(request.getRecipient().getLine2())
-            .line3(request.getRecipient().getLine3())
-            .city(request.getRecipient().getCity())
-            .state(request.getRecipient().getState())
-            .province(request.getRecipient().getProvince())
-            .postalCode(request.getRecipient().getPostalCode())
-            .country(request.getRecipient().getCountry())
-            .build())
-        .status(Status.NEW)
-        .timeOrdered(request.getTimeOrdered())
-        .timeReleased(request.getTimeReleased())
-        .build();
+    order.setExternalId(request.getOrderNumber());
+    order.setCustomerOrderNumber(request.getCustomerOrderNumber());
+    order.setContact(Contact.builder()
+        .name(request.getRecipient().getName())
+        .email(request.getRecipient().getEmail())
+        .phone(request.getRecipient().getPhone())
+        .build());
+    order.setAddress(Address.builder()
+        .line1(request.getRecipient().getLine1())
+        .line2(request.getRecipient().getLine2())
+        .line3(request.getRecipient().getLine3())
+        .city(request.getRecipient().getCity())
+        .state(request.getRecipient().getState())
+        .province(request.getRecipient().getProvince())
+        .postalCode(request.getRecipient().getPostalCode())
+        .country(request.getRecipient().getCountry())
+        .build());
+    order.setStatus(Status.NEW);
+    order.setTimeOrdered(request.getTimeOrdered());
+    order.setTimeReleased(request.getTimeReleased());
 
     processWarehouse(request, order, result);
     processItems(request, order, result);
     processServiceLevel(request, order, result);
+  }
 
-    return order;
+  @Override
+  protected Order processSuccessful(SubmitOrderAction action, Order order) {
+    return orderRepository.save(order);
+  }
+
+  @Override
+  protected Order findOrder(SubmitOrderAction action, OrderActionResultBuilder result) {
+    String orderNumber = action.getRequest().getOrderNumber();
+    if (orderRepository.existsByExternalId(orderNumber)) {
+      fail(result, "order " + orderNumber + " already exists");
+      return null;
+    }
+    return new Order();
   }
 
   private void processWarehouse(SubmitOrderRequest request, Order order,
@@ -150,12 +145,5 @@ public class SubmitOrderActionProcessor implements OrderActionProcessor<SubmitOr
         .findServiceLevelByCarrierNameAndMode(request.getCarrierName(), request.getCarrierMode())
         .ifPresentOrElse(order::setServiceLevel,
             () -> fail(result, "carrier service level not found"));
-  }
-
-  private void fail(OrderActionResult.OrderActionResultBuilder result, String reasonDescription) {
-    result.status(OrderActionResult.Status.FAILED);
-    result.reason(Reason.builder()
-        .description(reasonDescription)
-        .build());
   }
 }

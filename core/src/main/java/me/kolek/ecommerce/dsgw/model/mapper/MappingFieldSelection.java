@@ -1,6 +1,5 @@
 package me.kolek.ecommerce.dsgw.model.mapper;
 
-import java.util.Map;
 import java.util.Optional;
 
 public interface MappingFieldSelection {

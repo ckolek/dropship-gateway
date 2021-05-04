@@ -9,13 +9,15 @@ import me.kolek.ecommerce.dsgw.api.model.OrderItemDTO;
 import me.kolek.ecommerce.dsgw.model.Order;
 import me.kolek.ecommerce.dsgw.model.OrderItem;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(uses = {UuidMapper.class, WarehouseMapper.class, ContactMapper.class, AddressMapper.class,
-    OrderItemMapper.class, ServiceLevelMapper.class})
+    OrderItemMapper.class, ServiceLevelMapper.class,
+    OrderCancelCodeMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class OrderMapper {
 
   private static final String FIELD__WAREHOUSE = "warehouse";

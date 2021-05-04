@@ -9,12 +9,13 @@ import me.kolek.ecommerce.dsgw.api.model.WarehouseDTO;
 import me.kolek.ecommerce.dsgw.model.Supplier;
 import me.kolek.ecommerce.dsgw.model.Warehouse;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(uses = {UuidMapper.class, WarehouseMapper.class})
+@Mapper(uses = {UuidMapper.class, WarehouseMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class SupplierMapper {
 
   private final String FIELD__WAREHOUSES = "warehouses";

@@ -6,12 +6,14 @@ import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.InventoryDTO;
 import me.kolek.ecommerce.dsgw.model.ItemInventory;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(uses = {UuidMapper.class, CatalogEntryMapper.class, WarehouseMapper.class})
+@Mapper(uses = {UuidMapper.class, CatalogEntryMapper.class,
+    WarehouseMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class ItemInventoryMapper {
 
   private static final String FIELD__CATALOG_ENTRY = "catalogEntry";

@@ -2,7 +2,6 @@ package me.kolek.ecommerce.dsgw.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Map;
