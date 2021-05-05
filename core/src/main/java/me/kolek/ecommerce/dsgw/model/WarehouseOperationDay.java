@@ -9,6 +9,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,10 @@ public class WarehouseOperationDay {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
+
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "warehouse_id", nullable = false, updatable = false)
+  private Warehouse warehouse;
 
   @Column(name = "day_of_week", nullable = false)
   @Enumerated

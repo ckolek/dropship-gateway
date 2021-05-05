@@ -35,6 +35,7 @@ input SubmitOrderItem {
     ean: String
     isbn: String
     quantity: Int!
+    customization: String
     expectedShipDate: DateTime
     expectedDeliveryDate: DateTime
 }

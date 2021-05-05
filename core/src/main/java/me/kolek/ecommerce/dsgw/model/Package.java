@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -38,11 +39,11 @@ public class Package {
   @Column(name = "external_id", nullable = false, length = 32)
   private String externalId;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "order_id", nullable = false)
   private Order order;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "warehouse_id", nullable = false)
   private Warehouse warehouse;
 
@@ -81,14 +82,14 @@ public class Package {
       @AttributeOverride(name = "country", column = @Column(name = "recipient_country"))})
   private Address recipientAddress;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "service_level_id", nullable = false)
   private ServiceLevel serviceLevel;
 
   @Column(name = "tracking_number", nullable = false, length = 64)
   private String trackingNumber;
 
-  @OneToMany(mappedBy = "_package")
+  @OneToMany(mappedBy = "_package", cascade = CascadeType.ALL)
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private List<PackageItem> items;

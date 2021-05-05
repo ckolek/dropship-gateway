@@ -2,6 +2,7 @@ package me.kolek.ecommerce.dsgw.model;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,11 +36,11 @@ public class Invoice {
   @Column(name = "external_id", nullable = false, length = 32)
   private String externalId;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "order_id", nullable = false)
   private Order order;
 
-  @OneToMany(mappedBy = "invoice")
+  @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL)
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private List<InvoiceItem> items;

@@ -2,6 +2,7 @@ package me.kolek.ecommerce.dsgw.model;
 
 import java.time.OffsetDateTime;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,7 +34,7 @@ public class Carrier {
   @Column(name = "name", nullable = false, length = 64)
   private String name;
 
-  @OneToMany(mappedBy = "carrier")
+  @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL)
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private Set<ServiceLevel> serviceLevels;

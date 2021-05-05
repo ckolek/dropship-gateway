@@ -29,11 +29,11 @@ public class InvoiceItem {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "invoice_id", nullable = false)
   private Invoice invoice;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "order_item_id", nullable = false)
   private OrderItem orderItem;
 

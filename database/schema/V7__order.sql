@@ -80,6 +80,13 @@ CREATE TABLE IF NOT EXISTS order_item
     customization          TEXT        NULL,
     expected_ship_date     TIMESTAMPTZ NULL,
     expected_delivery_date TIMESTAMPTZ NULL,
+    status                 TEXT        NOT NULL,
+    quantity_accepted      SMALLINT    NULL,
+    quantity_rejected      SMALLINT    NULL,
+    reject_code_id         BIGINT      NULL,
+    reject_reason          TEXT        NULL,
+    time_acknowledged      TIMESTAMPTZ NULL,
+    quantity_cancelled     SMALLINT    NULL,
     cancel_code_id         BIGINT      NULL,
     cancel_reason          TEXT        NULL,
     time_cancelled         TIMESTAMPTZ NULL,
@@ -90,11 +97,13 @@ CREATE TABLE IF NOT EXISTS order_item
     CONSTRAINT order_item_uk02 UNIQUE (order_id, line_number),
     CONSTRAINT order_item_fk01 FOREIGN KEY (order_id) REFERENCES "order" (id) ON DELETE CASCADE,
     CONSTRAINT order_item_fk02 FOREIGN KEY (catalog_item_id) REFERENCES catalog_item (id),
-    CONSTRAINT order_item_fk03 FOREIGN KEY (cancel_code_id) REFERENCES order_cancel_code (id)
+    CONSTRAINT order_item_fk03 FOREIGN KEY (reject_code_id) REFERENCES order_cancel_code (id),
+    CONSTRAINT order_item_fk04 FOREIGN KEY (cancel_code_id) REFERENCES order_cancel_code (id)
 );
 
 CREATE INDEX IF NOT EXISTS order_item_idx01 ON order_item (catalog_item_id);
-CREATE INDEX IF NOT EXISTS order_item_idx02 ON order_item (cancel_code_id);
+CREATE INDEX IF NOT EXISTS order_item_idx02 ON order_item (reject_code_id);
+CREATE INDEX IF NOT EXISTS order_item_idx03 ON order_item (cancel_code_id);
 
 ALTER TABLE order_item OWNER TO dsgw;
 REVOKE ALL ON TABLE order_item FROM PUBLIC;

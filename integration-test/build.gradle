@@ -7,6 +7,8 @@ dependencies {
   implementation testLibraries.cucumberJunit
   implementation testLibraries.cucumberPicocontainer
   implementation libraries.jacksonDatabind
+  implementation libraries.jacksonDatatypeJsr310
   implementation testLibraries.junitJupiterApi
   implementation testLibraries.junitJupiterEngine
+  implementation libraries.resilience4jRetry
 }

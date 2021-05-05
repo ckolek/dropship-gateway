@@ -1,5 +1,7 @@
 package me.kolek.ecommerce.dsgw.worker.processor;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.OrderActionResultBuilder;
 import me.kolek.ecommerce.dsgw.api.model.action.order.cancel.CancelOrderRequest;
@@ -7,6 +9,7 @@ import me.kolek.ecommerce.dsgw.internal.model.order.action.CancelOrderAction;
 import me.kolek.ecommerce.dsgw.model.Order;
 import me.kolek.ecommerce.dsgw.model.Order.Status;
 import me.kolek.ecommerce.dsgw.model.OrderCancelCode;
+import me.kolek.ecommerce.dsgw.model.OrderItem;
 import me.kolek.ecommerce.dsgw.repository.OrderCancelCodeRepository;
 import me.kolek.ecommerce.dsgw.repository.OrderRepository;
 import org.springframework.stereotype.Component;
@@ -48,8 +51,32 @@ public class CancelOrderActionProcessor extends BaseOrderActionProcessor<CancelO
       return;
     }
 
+    cancelOrder(order, cancelCode, request.getCancelReason(), OffsetDateTime.now());
+  }
+
+  private void cancelOrder(Order order, OrderCancelCode cancelCode, String cancelReason,
+      OffsetDateTime now) {
     order.setStatus(Status.CANCELLED);
     order.setCancelCode(cancelCode);
-    order.setCancelReason(request.getCancelReason());
+    order.setCancelReason(cancelReason);
+    order.setTimeCancelled(now);
+
+    cancelItems(order.getItems(), cancelCode, cancelReason, now);
+  }
+
+  private void cancelItems(List<OrderItem> items, OrderCancelCode cancelCode, String cancelReason,
+      OffsetDateTime now) {
+    for (OrderItem item : items) {
+      cancelItem(item, cancelCode, cancelReason, now);
+    }
+  }
+
+  private void cancelItem(OrderItem item, OrderCancelCode cancelCode, String cancelReason,
+      OffsetDateTime now) {
+    item.setStatus(Status.CANCELLED);
+    item.setQuantityCancelled(item.getQuantity());
+    item.setCancelCode(cancelCode);
+    item.setCancelReason(cancelReason);
+    item.setTimeCancelled(now);
   }
 }

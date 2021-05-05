@@ -1,0 +1,6 @@
+query GetOrder($id: ID, $orderNumber: String) {
+    order(id: $id, orderNumber: $orderNumber) {
+        id,
+        status
+    }
+}

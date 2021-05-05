@@ -2,6 +2,7 @@ package me.kolek.ecommerce.dsgw.model;
 
 import java.time.OffsetDateTime;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -39,7 +40,7 @@ public class Supplier {
   @Enumerated(EnumType.STRING)
   private Status status;
 
-  @OneToMany(mappedBy = "supplier")
+  @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private Set<Warehouse> warehouses;

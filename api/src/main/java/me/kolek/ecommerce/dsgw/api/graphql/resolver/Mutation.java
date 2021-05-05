@@ -22,9 +22,9 @@ public class Mutation implements GraphQLMutationResolver {
         .processOrderAction(SubmitOrderAction.builder().request(request).build());
   }
 
-  public OrderActionResult cancelOrder(String orderNumber, CancelOrderRequest request,
+  public OrderActionResult cancelOrder(String orderId, CancelOrderRequest request,
       Boolean async) throws Exception {
     return orderActionService.processOrderAction(
-        CancelOrderAction.builder().orderNumber(orderNumber).request(request).build());
+        CancelOrderAction.builder().orderId(orderId).request(request).build());
   }
 }

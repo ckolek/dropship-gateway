@@ -1,17 +1,18 @@
 ext {
   versions = [
-      awsSdk     : '1.11.1004',
-      caffeine   : '3.0.1',
-      camel      : '3.8.0',
-      graphql    : '11.0.0',
-      guava      : '27.1-jre',
-      jackson    : '2.12.3',
-      javaxInject: '1',
-      log4j      : '2.14.1',
-      mapstruct  : '1.4.2.Final',
-      postgresql : '42.2.5',
-      slf4j      : '1.7.30',
-      springBoot : '2.4.5'
+      awsSdk      : '1.11.1004',
+      caffeine    : '3.0.1',
+      camel       : '3.8.0',
+      graphql     : '11.0.0',
+      guava       : '27.1-jre',
+      jackson     : '2.12.3',
+      javaxInject : '1',
+      log4j       : '2.14.1',
+      mapstruct   : '1.4.2.Final',
+      postgresql  : '42.2.5',
+      resilience4j: '1.7.0',
+      slf4j       : '1.7.30',
+      springBoot  : '2.4.5'
   ]
 
   libraries = [
@@ -24,6 +25,7 @@ ext {
       graphqlSpringBootStarter        : "com.graphql-java-kickstart:graphql-spring-boot-starter:${versions.graphql}",
       guava                           : "com.google.guava:guava:${versions.guava}",
       jacksonDatabind                 : "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
+      jacksonDatatypeJsr310           : "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}",
       javaxInject                     : "javax.inject:javax.inject:${versions.javaxInject}",
       log4jApi                        : "org.apache.logging.log4j:log4j-api:${versions.log4j}",
       log4jCore                       : "org.apache.logging.log4j:log4j-core:${versions.log4j}",
@@ -31,6 +33,7 @@ ext {
       mapstruct                       : "org.mapstruct:mapstruct:${versions.mapstruct}",
       mapstructProcessor              : "org.mapstruct:mapstruct-processor:${versions.mapstruct}",
       postgresql                      : "org.postgresql:postgresql:${versions.postgresql}",
+      resilience4jRetry               : "io.github.resilience4j:resilience4j-retry:${versions.resilience4j}",
       slf4jApi                        : "org.slf4j:slf4j-api:${versions.slf4j}",
       springBootConfigurationProcessor: "org.springframework.boot:spring-boot-configuration-processor:${versions.springBoot}",
       springBootStarterActuator       : "org.springframework.boot:spring-boot-starter-actuator",

@@ -1,5 +1,5 @@
 extend type Mutation {
-    cancelOrder(orderNumber: String!, request: CancelOrderRequest!, async: Boolean) : OrderActionResult!
+    cancelOrder(orderId: ID!, request: CancelOrderRequest!, async: Boolean) : OrderActionResult!
 }
 
 input CancelOrderRequest {

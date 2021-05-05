@@ -31,7 +31,7 @@ public class ServiceLevel {
   @Column(name = "mode", nullable = false, length = 64)
   private String mode;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "carrier_id", nullable = false)
   private Carrier carrier;
 

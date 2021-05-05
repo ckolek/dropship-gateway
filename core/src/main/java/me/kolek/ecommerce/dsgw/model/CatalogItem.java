@@ -2,6 +2,7 @@ package me.kolek.ecommerce.dsgw.model;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,7 +33,7 @@ public class CatalogItem {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "catalog_id", nullable = false)
   private Catalog catalog;
 
@@ -40,7 +41,7 @@ public class CatalogItem {
   @JoinColumn(name = "parent_item_id")
   private CatalogItem parentItem;
 
-  @OneToMany(mappedBy = "parentItem")
+  @OneToMany(mappedBy = "parentItem", cascade = CascadeType.ALL)
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private List<CatalogItem> childItems;

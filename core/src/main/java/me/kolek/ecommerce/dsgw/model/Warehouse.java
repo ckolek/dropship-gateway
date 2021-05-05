@@ -31,7 +31,7 @@ public class Warehouse {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "supplier_id", nullable = false)
   private Supplier supplier;
 

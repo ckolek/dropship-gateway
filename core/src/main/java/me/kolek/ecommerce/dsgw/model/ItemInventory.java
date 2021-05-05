@@ -28,11 +28,11 @@ public class ItemInventory {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "catalog_item_id", nullable = false, updatable = false)
   private CatalogItem catalogItem;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "warehouse_id", nullable = false, updatable = false)
   private Warehouse warehouse;
 

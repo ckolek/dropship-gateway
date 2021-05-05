@@ -1,0 +1,9 @@
+mutation CancelOrder($orderId: ID!, $request: CancelOrderRequest!) {
+    cancelOrder(orderId: $orderId, request: $request) {
+        orderId
+        status
+        reasons {
+            description
+        }
+    }
+}

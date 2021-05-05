@@ -129,6 +129,7 @@ public class SubmitOrderActionProcessor extends BaseOrderActionProcessor<SubmitO
         .customization(item.getCustomization())
         .expectedShipDate(item.getExpectedShipDate())
         .expectedDeliveryDate(item.getExpectedDeliveryDate())
+        .status(Status.NEW)
         .build());
   }
 

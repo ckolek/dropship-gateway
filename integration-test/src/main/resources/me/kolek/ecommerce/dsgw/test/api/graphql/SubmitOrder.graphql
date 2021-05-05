@@ -1,5 +1,9 @@
 mutation SubmitOrder($request: SubmitOrderRequest!) {
     submitOrder(request: $request) {
-        id
+        orderId
+        status
+        reasons {
+            description
+        }
     }
 }

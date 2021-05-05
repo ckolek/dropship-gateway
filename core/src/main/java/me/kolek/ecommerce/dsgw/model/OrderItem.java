@@ -3,6 +3,8 @@ package me.kolek.ecommerce.dsgw.model;
 import java.time.OffsetDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,14 +30,14 @@ public class OrderItem {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "order_id", nullable = false)
   private Order order;
 
   @Column(name = "line_number", nullable = false)
   private Integer lineNumber;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "catalog_item_id", nullable = false)
   private CatalogItem catalogItem;
 
@@ -50,6 +52,29 @@ public class OrderItem {
 
   @Column(name = "expected_delivery_date")
   private OffsetDateTime expectedDeliveryDate;
+
+  @Column(name = "status", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private Order.Status status;
+
+  @Column(name = "quantity_accepted")
+  private Integer quantityAccepted;
+
+  @Column(name = "quantity_rejected")
+  private Integer quantityRejected;
+
+  @ManyToOne
+  @JoinColumn(name = "reject_code_id")
+  private OrderCancelCode rejectCode;
+
+  @Column(name = "reject_reason")
+  private String rejectReason;
+
+  @Column(name = "time_acknowledged")
+  private OffsetDateTime timeAcknowledged;
+
+  @Column(name = "quantity_cancelled")
+  private Integer quantityCancelled;
 
   @ManyToOne
   @JoinColumn(name = "cancel_code_id")

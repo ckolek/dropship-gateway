@@ -1,6 +1,7 @@
 package me.kolek.ecommerce.dsgw.test.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Iterables;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -23,7 +24,9 @@ public class GraphQLInvoker {
 
   public GraphQLInvoker() {
     this.httpClient = HttpClient.newHttpClient();
-    this.objectMapper = new ObjectMapper().findAndRegisterModules();
+    this.objectMapper = new ObjectMapper().findAndRegisterModules()
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        .disable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
     this.queries = new HashMap<>();
   }
 
