@@ -1,10 +1,12 @@
 package me.kolek.ecommerce.dsgw.worker.processor;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.OrderActionResultBuilder;
 import me.kolek.ecommerce.dsgw.api.model.action.order.cancel.CancelOrderRequest;
+import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Type;
+import me.kolek.ecommerce.dsgw.events.OrderEventEmitter;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.CancelOrderAction;
 import me.kolek.ecommerce.dsgw.model.Order;
 import me.kolek.ecommerce.dsgw.model.Order.Status;
@@ -18,12 +20,14 @@ import org.springframework.stereotype.Component;
 public class CancelOrderActionProcessor extends BaseOrderActionProcessor<CancelOrderAction> {
 
   private final OrderCancelCodeRepository orderCancelCodeRepository;
+  private final OrderEventEmitter eventEmitter;
 
   @Inject
   public CancelOrderActionProcessor(OrderRepository orderRepository,
-      OrderCancelCodeRepository orderCancelCodeRepository) {
+      OrderCancelCodeRepository orderCancelCodeRepository, OrderEventEmitter eventEmitter) {
     super(orderRepository);
     this.orderCancelCodeRepository = orderCancelCodeRepository;
+    this.eventEmitter = eventEmitter;
   }
 
   @Override
@@ -51,32 +55,41 @@ public class CancelOrderActionProcessor extends BaseOrderActionProcessor<CancelO
       return;
     }
 
-    cancelOrder(order, cancelCode, request.getCancelReason(), OffsetDateTime.now());
+    OffsetDateTime timeCancelled = OffsetDateTime.now();
+
+    cancelOrder(order, cancelCode, request.getCancelReason(), timeCancelled);
+    cancelItems(order, cancelCode, request.getCancelReason(), timeCancelled);
+  }
+
+  @Override
+  @SneakyThrows
+  protected Order processSuccessful(CancelOrderAction action, Order order) {
+    eventEmitter.emitEvent(order, Type.ORDER_CANCELLED);
+
+    return order;
   }
 
   private void cancelOrder(Order order, OrderCancelCode cancelCode, String cancelReason,
-      OffsetDateTime now) {
+      OffsetDateTime timeCancelled) {
     order.setStatus(Status.CANCELLED);
     order.setCancelCode(cancelCode);
     order.setCancelReason(cancelReason);
-    order.setTimeCancelled(now);
-
-    cancelItems(order.getItems(), cancelCode, cancelReason, now);
+    order.setTimeCancelled(timeCancelled);
   }
 
-  private void cancelItems(List<OrderItem> items, OrderCancelCode cancelCode, String cancelReason,
-      OffsetDateTime now) {
-    for (OrderItem item : items) {
-      cancelItem(item, cancelCode, cancelReason, now);
+  private void cancelItems(Order order, OrderCancelCode cancelCode, String cancelReason,
+      OffsetDateTime timeCancelled) {
+    for (OrderItem item : order.getItems()) {
+      cancelItem(item, cancelCode, cancelReason, timeCancelled);
     }
   }
 
   private void cancelItem(OrderItem item, OrderCancelCode cancelCode, String cancelReason,
-      OffsetDateTime now) {
+      OffsetDateTime timeCancelled) {
     item.setStatus(Status.CANCELLED);
     item.setQuantityCancelled(item.getQuantity());
     item.setCancelCode(cancelCode);
     item.setCancelReason(cancelReason);
-    item.setTimeCancelled(now);
+    item.setTimeCancelled(timeCancelled);
   }
 }

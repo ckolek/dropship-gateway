@@ -15,7 +15,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(uses = {UuidMapper.class, SupplierMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class WarehouseMapper {
 
-  private static final String FIELD__SUPPLIER = "supplier";
+  public static final String FIELD__SUPPLIER = "supplier";
 
   @Inject
   private SupplierMapper supplierMapper;

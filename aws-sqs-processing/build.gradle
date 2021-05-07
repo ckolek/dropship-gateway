@@ -2,4 +2,6 @@ dependencies {
   implementation project(':aws-support')
   implementation libraries.slf4jApi
   implementation libraries.springBootStarterIntegration
+
+  annotationProcessor libraries.springBootConfigurationProcessor
 }

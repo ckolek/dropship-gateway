@@ -1,0 +1,15 @@
+extend type Mutation {
+    acknowledgeOrder(orderId: ID!, request: AcknowledgeOrderRequest!, async: Boolean) : OrderActionResult!
+}
+
+input AcknowledgeOrderRequest {
+    items: [AcknowledgeOrderItem!]!
+}
+
+input AcknowledgeOrderItem {
+    lineNumber: Int!
+    quantityAccepted: Int
+    quantityRejected: Int
+    rejectCode: String
+    rejectReason: String
+}

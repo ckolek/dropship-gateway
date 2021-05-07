@@ -14,7 +14,7 @@ import org.mapstruct.Mapping;
 @Mapper(uses = {UuidMapper.class, CarrierMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class ServiceLevelMapper {
 
-  private final String FIELD__CARRIER = "carrier";
+  public static final String FIELD__CARRIER = "carrier";
 
   @Inject
   private CarrierMapper carrierMapper;

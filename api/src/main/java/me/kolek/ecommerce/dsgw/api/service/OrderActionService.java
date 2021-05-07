@@ -8,6 +8,7 @@ import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
+import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.Status;
 import me.kolek.ecommerce.dsgw.context.RequestContext;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.OrderAction;
 import me.kolek.ecommerce.dsgw.internal.model.queue.MessageAttributes;
@@ -60,25 +62,32 @@ public class OrderActionService {
     return orderActionResultsQueueUrl;
   }
 
-  public OrderActionResult processOrderAction(OrderAction<?> orderAction) throws Exception {
+  public OrderActionResult processOrderAction(OrderAction<?> orderAction, boolean async)
+      throws Exception {
     String body = objectMapper.writeValueAsString(orderAction);
 
     String requestId = RequestContext.get().getId();
     String responseQueueUrl = getOrderActionResultsQueueUrl();
 
-    Map<String, String> attributes = Map.of(
-        MessageAttributes.REQUEST_ID, requestId,
-        MessageAttributes.RESPONSE_QUEUE_URL, responseQueueUrl);
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put(MessageAttributes.REQUEST_ID, requestId);
+    if (!async) {
+      attributes.put(MessageAttributes.RESPONSE_QUEUE_URL, responseQueueUrl);
+    }
 
     sqs.sendMessage(new SendMessageRequest()
         .withQueueUrl(getOrderActionsQueueUrl())
         .withMessageBody(body)
         .withMessageAttributes(toMessageAttributeValueMap(attributes)));
 
-    CompletableFuture<OrderActionResult> result = new CompletableFuture<>();
-    results.put(requestId, result);
-    resultExecutor.submit(() -> receiveResultMessages(responseQueueUrl));
-    return result.get(10, TimeUnit.SECONDS);
+    if (!async) {
+      CompletableFuture<OrderActionResult> result = new CompletableFuture<>();
+      results.put(requestId, result);
+      resultExecutor.submit(() -> receiveResultMessages(responseQueueUrl));
+      return result.get(10, TimeUnit.SECONDS);
+    } else {
+      return OrderActionResult.builder().status(Status.PENDING).build();
+    }
   }
 
   private Object receiveResultMessages(String queueUrl) throws Exception {

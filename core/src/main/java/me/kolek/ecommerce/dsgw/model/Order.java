@@ -83,6 +83,9 @@ public class Order {
   @Column(name = "time_released", nullable = false)
   private OffsetDateTime timeReleased;
 
+  @Column(name = "time_acknowledged")
+  private OffsetDateTime timeAcknowledged;
+
   @Column(name = "time_cancelled")
   private OffsetDateTime timeCancelled;
 
@@ -111,6 +114,7 @@ public class Order {
     ACKNOWLEDGED,
     SHIPPED_PARTIAL,
     SHIPPED,
+    INVOICED_PARTIAL,
     INVOICED,
     CANCELLED
   }

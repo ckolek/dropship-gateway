@@ -34,6 +34,7 @@ public class OrderDTO {
     ACKNOWLEDGED,
     SHIPPED_PARTIAL,
     SHIPPED,
+    INVOICED_PARTIAL,
     INVOICED,
     CANCELLED
   }

@@ -39,4 +39,39 @@ function create_fifo_queue() {
   done
 }
 
+function create_topic() {
+  attempts=0
+  retCode=-1
+  while [[ $attempts -lt 10 ]] && [[ $retCode -ne 0 ]]; do
+    aws --endpoint-url=${AWS_URL} sns create-topic --name "$1"
+    retCode=$?
+    ((attempts+=1))
+    if [ $retCode -ne 0 ]; then
+      echo failed with exit code $retCode - retry $attempts...
+      sleep 1
+    fi
+  done
+}
+
+function create_topic_to_queue_subscription() {
+  attempts=0
+  retCode=-1
+  while [[ $attempts -lt 10 ]] && [[ $retCode -ne 0 ]]; do
+    aws --endpoint-url=${AWS_URL} sns subscribe \
+        --topic-arn "arn:aws:sns:${AWS_DEFAULT_REGION}:${AWS_ACCOUNT_ID}:$1" \
+        --protocol sqs \
+        --notification-endpoint "arn:aws:sqs:${AWS_DEFAULT_REGION}:${AWS_ACCOUNT_ID}:$2" \
+        --attributes "RawMessageDelivery=true"
+    retCode=$?
+    ((attempts+=1))
+    if [ $retCode -ne 0 ]; then
+      echo failed with exit code $retCode - retry $attempts...
+      sleep 1
+    fi
+  done
+}
+
 create_queue "order-actions"
+create_topic "order-events"
+create_queue "order-events"
+create_topic_to_queue_subscription "order-events" "order-events"

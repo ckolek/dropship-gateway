@@ -1,6 +1,7 @@
 apply plugin: 'java-library'
 
 dependencies {
+  api libraries.awsSdkSns
   api libraries.awsSdkSqs
   implementation libraries.springBootStarterIntegration
 

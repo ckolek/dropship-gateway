@@ -12,12 +12,19 @@ public class Resilience {
       .build();
   private static final RetryRegistry REGISTRY = RetryRegistry.of(CONFIG);
 
-  public static void retry(ThrowingRunnable<?> runnable) throws Exception {
+  public static <E extends Exception> void retry(ThrowingRunnable<E> runnable) throws E {
     var retry = REGISTRY.retry("default");
-    Retry.decorateCallable(retry, () -> {
-      runnable.run();
-      return null;
-    }).call();
+    try {
+      Retry.decorateCallable(retry, () -> {
+        runnable.run();
+        return null;
+      }).call();
+    } catch (Exception e) {
+      if (e instanceof RuntimeException) {
+        throw (RuntimeException) e;
+      }
+      throw (E) e;
+    }
   }
 
   @FunctionalInterface

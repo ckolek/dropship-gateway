@@ -16,6 +16,8 @@ import lombok.experimental.SuperBuilder;
 @ToString(callSuper = true)
 public class CatalogItemDTO extends CatalogEntryDTO {
 
+  public static final String TYPE = "item";
+
   private CatalogDTO catalog;
   private List<CatalogItemOptionDTO> options;
 }

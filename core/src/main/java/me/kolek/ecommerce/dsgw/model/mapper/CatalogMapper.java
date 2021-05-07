@@ -19,8 +19,8 @@ import org.mapstruct.MappingTarget;
     CatalogEntryMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class CatalogMapper {
 
-  private static final String FIELD__SUPPLIER = "supplier";
-  private static final String FIELD__ITEMS = "items";
+  public static final String FIELD__SUPPLIER = "supplier";
+  public static final String FIELD__ITEMS = "items";
 
   @Inject
   private SupplierMapper supplierMapper;
@@ -37,6 +37,10 @@ public abstract class CatalogMapper {
         .setSupplier(supplierMapper.supplierToDto(catalog.getSupplier(), context, subSelection)));
     mapIfSelected(selection, FIELD__ITEMS, subSelection -> catalogDTO
         .setItems(catalogItemListToDtoList(catalog.getItems(), context, subSelection)));
+
+    if (context.isSetParentReferences() && catalogDTO.getItems() != null) {
+      catalogDTO.getItems().forEach(item -> item.setCatalog(catalogDTO));
+    }
   }
 
   protected abstract List<CatalogItemDTO> catalogItemListToDtoList(List<CatalogItem> catalogItems,

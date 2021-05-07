@@ -2,7 +2,7 @@ package me.kolek.ecommerce.dsgw.worker.processor;
 
 import com.google.common.primitives.Longs;
 import java.util.Optional;
-import javax.transaction.Transactional;
+import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.Reason;
@@ -10,6 +10,7 @@ import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.Status;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.OrderAction;
 import me.kolek.ecommerce.dsgw.model.Order;
 import me.kolek.ecommerce.dsgw.repository.OrderRepository;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RequiredArgsConstructor
 public abstract class BaseOrderActionProcessor<A extends OrderAction<?>> implements
@@ -17,24 +18,36 @@ public abstract class BaseOrderActionProcessor<A extends OrderAction<?>> impleme
 
   protected final OrderRepository orderRepository;
 
+  @Inject
+  protected TransactionTemplate transactionTemplate;
+
   @Override
-  @Transactional
-  public OrderActionResult process(A action) throws Exception {
-    var resultBuilder = OrderActionResult.builder()
-        .status(Status.SUCCESSFUL);
+  public OrderActionResult process(A action) {
+    return transactionTemplate.execute(status -> {
+      var resultBuilder = OrderActionResult.builder()
+          .status(Status.SUCCESSFUL);
 
-    Order order = findOrder(action, resultBuilder);
-    if (order != null) {
-      process(action, order, resultBuilder);
-    }
+      Order order = findOrder(action, resultBuilder);
+      if (order != null) {
+        process(action, order, resultBuilder);
+      }
 
-    var result = resultBuilder.build();
-    if (result.getStatus() == Status.SUCCESSFUL) {
-      order = processSuccessful(action, order);
-      result.setOrderId(order.getId().toString());
-    }
+      var result = resultBuilder.build();
+      switch (result.getStatus()) {
+        case SUCCESSFUL:
+          order = processSuccessful(action, order);
+          break;
+        case FAILED:
+          order = processFailed(action, order);
+          status.setRollbackOnly();
+          break;
+      }
 
-    return result;
+      Optional.ofNullable(order).map(Order::getId).map(Object::toString)
+          .ifPresent(result::setOrderId);
+
+      return result;
+    });
   }
 
   protected abstract void process(A action, Order order,
@@ -44,21 +57,22 @@ public abstract class BaseOrderActionProcessor<A extends OrderAction<?>> impleme
     return order;
   }
 
+  protected Order processFailed(A action, Order order) {
+    return order;
+  }
+
   protected Order findOrder(A action, OrderActionResult.OrderActionResultBuilder result) {
-    Order order;
     if (action.getOrderId() != null) {
-      order = Optional.of(action.getOrderId()).map(Longs::tryParse)
+      Order order = Optional.of(action.getOrderId()).map(Longs::tryParse)
           .flatMap(orderRepository::findById).orElse(null);
       if (order == null) {
         fail(result, "order not found with ID " + action.getOrderId());
       }
+      return order;
     } else {
-      order = orderRepository.findByExternalId(action.getOrderNumber()).orElse(null);
-      if (order == null) {
-        fail(result, "order not found with order number " + action.getOrderNumber());
-      }
+      fail(result, "order ID is required");
+      return null;
     }
-    return order;
   }
 
   protected static void fail(OrderActionResult.OrderActionResultBuilder result,

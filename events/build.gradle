@@ -1,0 +1,12 @@
+apply plugin: 'java-library'
+
+dependencies {
+  api project(':api-model')
+  api project(':aws-support')
+  api project(':core')
+  implementation project(':internal-model')
+  implementation libraries.slf4jApi
+  implementation libraries.springBootStarterIntegration
+
+  annotationProcessor libraries.springBootConfigurationProcessor
+}

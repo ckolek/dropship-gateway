@@ -1,10 +1,13 @@
 package me.kolek.ecommerce.dsgw.worker.processor;
 
 import javax.inject.Inject;
+import lombok.SneakyThrows;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.OrderActionResultBuilder;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderItem;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRequest;
+import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Type;
+import me.kolek.ecommerce.dsgw.events.OrderEventEmitter;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.SubmitOrderAction;
 import me.kolek.ecommerce.dsgw.model.Address;
 import me.kolek.ecommerce.dsgw.model.CatalogItem;
@@ -24,15 +27,17 @@ public class SubmitOrderActionProcessor extends BaseOrderActionProcessor<SubmitO
   private final WarehouseRegistry warehouseRegistry;
   private final CatalogItemRepository catalogItemRepository;
   private final CarrierRegistry carrierRegistry;
+  private final OrderEventEmitter eventEmitter;
 
   @Inject
   public SubmitOrderActionProcessor(OrderRepository orderRepository,
       WarehouseRegistry warehouseRegistry, CatalogItemRepository catalogItemRepository,
-      CarrierRegistry carrierRegistry) {
+      CarrierRegistry carrierRegistry, OrderEventEmitter eventEmitter) {
     super(orderRepository);
     this.warehouseRegistry = warehouseRegistry;
     this.catalogItemRepository = catalogItemRepository;
     this.carrierRegistry = carrierRegistry;
+    this.eventEmitter = eventEmitter;
   }
 
   @Override
@@ -71,8 +76,13 @@ public class SubmitOrderActionProcessor extends BaseOrderActionProcessor<SubmitO
   }
 
   @Override
+  @SneakyThrows
   protected Order processSuccessful(SubmitOrderAction action, Order order) {
-    return orderRepository.save(order);
+    order = orderRepository.save(order);
+
+    eventEmitter.emitEvent(order, Type.ORDER_CREATED);
+
+    return order;
   }
 
   @Override
@@ -144,7 +154,8 @@ public class SubmitOrderActionProcessor extends BaseOrderActionProcessor<SubmitO
     }
     carrierRegistry
         .findServiceLevelByCarrierNameAndMode(request.getCarrierName(), request.getCarrierMode())
-        .ifPresentOrElse(order::setServiceLevel,
-            () -> fail(result, "carrier service level not found"));
+        .ifPresentOrElse(order::setServiceLevel, () -> fail(result,
+            "carrier/service level \"" + request.getCarrierName() + "/" + request.getCarrierMode()
+                + "\" not found"));
   }
 }

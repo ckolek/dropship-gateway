@@ -16,8 +16,8 @@ import org.mapstruct.MappingTarget;
     AddressMapper.class, OrderCancelCodeMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class OrderItemMapper {
 
-  private static final String FIELD__ORDER = "order";
-  private static final String FIELD__CATALOG_ENTRY = "catalogEntry";
+  public static final String FIELD__ORDER = "order";
+  public static final String FIELD__CATALOG_ENTRY = "catalogEntry";
 
   @Inject
   private OrderMapper orderMapper;

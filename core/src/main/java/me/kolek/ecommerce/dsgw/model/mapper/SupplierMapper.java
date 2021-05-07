@@ -18,7 +18,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(uses = {UuidMapper.class, WarehouseMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class SupplierMapper {
 
-  private final String FIELD__WAREHOUSES = "warehouses";
+  public static final String FIELD__WAREHOUSES = "warehouses";
 
   @Mapping(target = FIELD__WAREHOUSES, ignore = true)
   protected abstract SupplierDTO supplierToDto(Supplier supplier,
@@ -30,7 +30,7 @@ public abstract class SupplierMapper {
     mapIfSelected(selection, FIELD__WAREHOUSES, subSelection -> supplierDTO
         .setWarehouses(warehouseSetToDtoList(supplier.getWarehouses(), context, subSelection)));
 
-    if (supplierDTO.getWarehouses() != null) {
+    if (context.isSetParentReferences() && supplierDTO.getWarehouses() != null) {
       supplierDTO.getWarehouses().forEach(warehouse -> warehouse.setSupplier(supplierDTO));
     }
   }

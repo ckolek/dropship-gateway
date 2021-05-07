@@ -16,8 +16,8 @@ import org.mapstruct.MappingTarget;
     WarehouseMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class ItemInventoryMapper {
 
-  private static final String FIELD__CATALOG_ENTRY = "catalogEntry";
-  private static final String FIELD__WAREHOUSE = "warehouse";
+  public static final String FIELD__CATALOG_ENTRY = "catalogEntry";
+  public static final String FIELD__WAREHOUSE = "warehouse";
 
   @Inject
   private CatalogEntryMapper catalogEntryMapper;

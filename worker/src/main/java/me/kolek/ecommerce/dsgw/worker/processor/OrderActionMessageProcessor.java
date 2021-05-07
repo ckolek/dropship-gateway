@@ -1,5 +1,6 @@
 package me.kolek.ecommerce.dsgw.worker.processor;
 
+import static me.kolek.ecommerce.dsgw.aws.sqs.AwsSqsUtil.getAttribute;
 import static me.kolek.ecommerce.dsgw.aws.sqs.AwsSqsUtil.getRequiredAttribute;
 import static me.kolek.ecommerce.dsgw.aws.sqs.AwsSqsUtil.toMessageAttributeValueMap;
 
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -78,15 +80,19 @@ public class OrderActionMessageProcessor extends ObjectMappingMessageProcessor<O
   private void sendResult(String messageId, Map<String, String> attributes,
       OrderActionResult result) throws Exception {
     String requestId = getRequiredAttribute(messageId, attributes, MessageAttributes.REQUEST_ID);
-    String responseQueueUrl = getRequiredAttribute(messageId, attributes,
+    Optional<String> responseQueueUrl = getAttribute(attributes,
         MessageAttributes.RESPONSE_QUEUE_URL);
+
+    if (responseQueueUrl.isEmpty()) {
+      return;
+    }
 
     String body = objectMapper.writeValueAsString(result);
 
     Map<String, String> messageAttributes = Map.of(MessageAttributes.REQUEST_ID, requestId);
 
     sqs.sendMessage(new SendMessageRequest()
-        .withQueueUrl(responseQueueUrl)
+        .withQueueUrl(responseQueueUrl.get())
         .withMessageBody(body)
         .withMessageAttributes(toMessageAttributeValueMap(messageAttributes))
         .withDelaySeconds(0));

@@ -1,7 +1,5 @@
 package me.kolek.ecommerce.dsgw.test.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.Iterables;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -15,18 +13,17 @@ import java.util.Map;
 import lombok.Data;
 import lombok.Value;
 import me.kolek.ecommerce.dsgw.test.Constants;
+import me.kolek.ecommerce.dsgw.test.Json;
 
 public class GraphQLInvoker {
+  private final Json json;
   private final HttpClient httpClient;
-  private final ObjectMapper objectMapper;
 
   private final Map<String, String> queries;
 
-  public GraphQLInvoker() {
+  public GraphQLInvoker(Json json) {
+    this.json = json;
     this.httpClient = HttpClient.newHttpClient();
-    this.objectMapper = new ObjectMapper().findAndRegisterModules()
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        .disable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
     this.queries = new HashMap<>();
   }
 
@@ -47,8 +44,7 @@ public class GraphQLInvoker {
 
   public <T> T invoke(String query, Map<String, Object> variables, Class<T> dataType)
       throws Exception {
-    byte[] body = objectMapper.writer()
-        .writeValueAsBytes(GraphQLRequest.of(getQuery(query), variables));
+    byte[] body = json.toByteArray(GraphQLRequest.of(getQuery(query), variables));
 
     var request = HttpRequest.newBuilder(Constants.API_BASE_URI.resolve("graphql"))
         .POST(BodyPublishers.ofByteArray(body))
@@ -58,13 +54,13 @@ public class GraphQLInvoker {
 
     GraphQLResponse graphQLResponse;
     try (var inputStream = response.body()) {
-      graphQLResponse = objectMapper.readValue(inputStream, GraphQLResponse.class);
+      graphQLResponse = json.parse(inputStream, GraphQLResponse.class);
     }
 
     if (graphQLResponse.getErrors() == null || graphQLResponse.getErrors().isEmpty()) {
       if (!graphQLResponse.getData().isEmpty()) {
         Object dataValue = Iterables.getOnlyElement(graphQLResponse.getData().values());
-        return objectMapper.convertValue(dataValue, dataType);
+        return json.convert(dataValue, dataType);
       } else {
         return null;
       }

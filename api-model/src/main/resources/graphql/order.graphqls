@@ -55,10 +55,17 @@ type OrderItem {
     catalogEntry: CatalogEntry!
     quantity: Int!
     customization: String
-    cancelCode: OrderCancelCode
-    cancelReason: String
     expectedShipDate: DateTime
     expectedDeliveryDate: DateTime
+    status: OrderStatus!
+    quantityAccepted: Int
+    quantityRejected: Int
+    rejectCode: OrderCancelCode
+    rejectReason: String
+    timeAcknowledged: DateTime
+    quantityCancelled: Int
+    cancelCode: OrderCancelCode
+    cancelReason: String
     timeCancelled: DateTime!
     timeCreated: DateTime!
     timeUpdated: DateTime!

@@ -20,9 +20,9 @@ import org.mapstruct.MappingTarget;
     OrderCancelCodeMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class OrderMapper {
 
-  private static final String FIELD__WAREHOUSE = "warehouse";
-  private static final String FIELD__ITEMS = "items";
-  private static final String FIELD__SERVICE_LEVEL = "serviceLevel";
+  public static final String FIELD__WAREHOUSE = "warehouse";
+  public static final String FIELD__ITEMS = "items";
+  public static final String FIELD__SERVICE_LEVEL = "serviceLevel";
 
   @Inject
   private WarehouseMapper warehouseMapper;
@@ -32,6 +32,11 @@ public abstract class OrderMapper {
 
   public OrderDTO orderToDto(Order order, @Context MappingFieldSelection selection) {
     return orderToDto(order, new CycleAvoidingMappingContext(), selection);
+  }
+
+  public OrderDTO orderToDto(Order order, boolean setParentReferences,
+      @Context MappingFieldSelection selection) {
+    return orderToDto(order, new CycleAvoidingMappingContext(setParentReferences), selection);
   }
 
   @Mapping(source = "externalId", target = "orderNumber")
@@ -51,7 +56,7 @@ public abstract class OrderMapper {
     mapIfSelected(selection, FIELD__SERVICE_LEVEL, subSelection -> orderDTO.setServiceLevel(
         serviceLevelMapper.serviceLevelToDto(order.getServiceLevel(), context, subSelection)));
 
-    if (orderDTO.getItems() != null) {
+    if (context.isSetParentReferences() && orderDTO.getItems() != null) {
       orderDTO.getItems().forEach(item -> item.setOrder(orderDTO));
     }
   }

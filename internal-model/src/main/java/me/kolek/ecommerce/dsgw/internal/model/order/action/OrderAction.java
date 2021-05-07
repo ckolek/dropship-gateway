@@ -27,11 +27,11 @@ import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 )
 @JsonSubTypes({
     @Type(name = SubmitOrderAction.TYPE, value = SubmitOrderAction.class),
+    @Type(name = AcknowledgeOrderAction.TYPE, value = AcknowledgeOrderAction.class),
     @Type(name = CancelOrderAction.TYPE, value = CancelOrderAction.class)
 })
 public abstract class OrderAction<T> {
   private String orderId;
-  private String orderNumber;
   private T request;
 
   public abstract String getType();

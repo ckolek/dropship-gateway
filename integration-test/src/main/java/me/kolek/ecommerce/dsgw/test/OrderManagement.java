@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import me.kolek.ecommerce.dsgw.api.model.OrderDTO;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.Status;
+import me.kolek.ecommerce.dsgw.api.model.action.order.acknowledge.AcknowledgeOrderRequest;
 import me.kolek.ecommerce.dsgw.api.model.action.order.cancel.CancelOrderRequest;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderItem;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRecipient;
@@ -57,6 +58,17 @@ public class OrderManagement {
 
     orderActionResult = graphQLInvoker
         .invoke("SubmitOrder", Map.of("request", request), OrderActionResult.class);
+  }
+
+  @When("A request to acknowledge the order is submitted")
+  public void acknowledgeOrder() throws Exception {
+    var request = AcknowledgeOrderRequest.builder()
+
+        .build();
+
+    orderActionResult = graphQLInvoker.invoke("AcknowledgeOrder",
+        Map.of("orderId", orderActionResult.getOrderId(), "request", request),
+        OrderActionResult.class);
   }
 
   @When("A request to cancel the order is submitted")

@@ -19,7 +19,7 @@ import org.mapstruct.MappingTarget;
     ServiceLevelMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class CarrierMapper {
 
-  private static final String FIELD__SERVICE_LEVELS = "serviceLevels";
+  public static final String FIELD__SERVICE_LEVELS = "serviceLevels";
 
   @Mapping(target = FIELD__SERVICE_LEVELS, ignore = true)
   public abstract CarrierDTO carrierToDto(Carrier carrier,
@@ -31,7 +31,7 @@ public abstract class CarrierMapper {
     mapIfSelected(selection, FIELD__SERVICE_LEVELS, subSelection -> carrierDTO.setServiceLevels(
         serviceLevelSetToDtoList(carrier.getServiceLevels(), context, subSelection)));
 
-    if (carrierDTO.getServiceLevels() != null) {
+    if (context.isSetParentReferences() && carrierDTO.getServiceLevels() != null) {
       carrierDTO.getServiceLevels().forEach(serviceLevel -> serviceLevel.setCarrier(carrierDTO));
     }
   }

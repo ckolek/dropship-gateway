@@ -19,7 +19,7 @@ services:
     ports:
       - "4566:4566"
     environment:
-      SERVICES: sqs
+      SERVICES: sns,sqs
   aws_setup:
     build:
       ./aws_setup/

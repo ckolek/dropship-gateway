@@ -4,7 +4,7 @@ extend type Mutation {
 
 input SubmitOrderRequest {
     orderNumber: String!
-    customerOrderNumber: String
+    customerOrderNumber: String!
     warehouseCode: String!
     recipient: SubmitOrderRecipient!
     items: [SubmitOrderItem!]!

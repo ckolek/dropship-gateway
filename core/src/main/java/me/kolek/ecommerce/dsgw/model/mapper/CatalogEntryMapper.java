@@ -18,9 +18,9 @@ import org.mapstruct.MappingTarget;
 @Mapper(uses = {UuidMapper.class, CatalogMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class CatalogEntryMapper {
 
-  private static final String FIELD__CATALOG = "catalog";
-  private static final String FIELD__ITEM = "item";
-  private static final String FIELD__OPTIONS = "options";
+  public static final String FIELD__CATALOG = "catalog";
+  public static final String FIELD__ITEM = "item";
+  public static final String FIELD__OPTIONS = "options";
 
   @Inject
   private CatalogMapper catalogMapper;
@@ -50,7 +50,7 @@ public abstract class CatalogEntryMapper {
     mapIfSelected(selection, FIELD__OPTIONS, subSelection -> catalogItemDTO.setOptions(
         catalogItemListToOptionDTO(catalogItem.getChildItems(), context, subSelection)));
 
-    if (catalogItemDTO.getOptions() != null) {
+    if (context.isSetParentReferences() && catalogItemDTO.getOptions() != null) {
       catalogItemDTO.getOptions().forEach(option -> option.setItem(catalogItemDTO));
     }
   }

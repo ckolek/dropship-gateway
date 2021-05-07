@@ -1,0 +1,9 @@
+mutation AcknowledgeOrder($orderId: ID!, $request: AcknowledgeOrderRequest!) {
+    acknowledgeOrder(orderId: $orderId, request: $request) {
+        orderId
+        status
+        reasons {
+            description
+        }
+    }
+}

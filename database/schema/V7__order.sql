@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS "order"
     cancel_reason         TEXT        NULL,
     time_ordered          TIMESTAMPTZ NOT NULL,
     time_released         TIMESTAMPTZ NOT NULL,
+    time_acknowledged     TIMESTAMPTZ NULL,
     time_cancelled        TIMESTAMPTZ NULL,
     time_created          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     time_updated          TIMESTAMPTZ NOT NULL DEFAULT NOW(),

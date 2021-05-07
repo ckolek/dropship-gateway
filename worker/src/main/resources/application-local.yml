@@ -7,6 +7,9 @@ server:
   port: 8081
 
 aws:
+  sns:
+    endpoint:
+      service-endpoint: http://localhost:4566
   sqs:
     endpoint:
       service-endpoint: http://localhost:4566
@@ -20,3 +23,6 @@ aws:
           attribute-names:
             - RequestID
             - ResponseQueueURL
+dsgw:
+  events:
+    order-event-topic-arn: arn:aws:sns:us-east-1:000000000000:order-events

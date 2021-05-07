@@ -2,6 +2,7 @@
 dependencies {
   implementation project(':api-model')
   implementation testLibraries.assertjCore
+  implementation libraries.awsSdkSqs
   implementation testLibraries.cucumberCore
   implementation testLibraries.cucumberJava
   implementation testLibraries.cucumberJunit

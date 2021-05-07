@@ -16,6 +16,7 @@ ext {
   ]
 
   libraries = [
+      awsSdkSns                       : "com.amazonaws:aws-java-sdk-sns:${versions.awsSdk}",
       awsSdkSqs                       : "com.amazonaws:aws-java-sdk-sqs:${versions.awsSdk}",
       caffeine                        : "com.github.ben-manes.caffeine:caffeine:${versions.caffeine}",
       camelJackson                    : "org.apache.camel:camel-jackson:${versions.camel}",
@@ -24,6 +25,7 @@ ext {
       camelSpringBootJacksonStarter   : "org.apache.camel.springboot:camel-jackson-starter:${versions.camel}",
       graphqlSpringBootStarter        : "com.graphql-java-kickstart:graphql-spring-boot-starter:${versions.graphql}",
       guava                           : "com.google.guava:guava:${versions.guava}",
+      jacksonAnnotations              : "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}",
       jacksonDatabind                 : "com.fasterxml.jackson.core:jackson-databind:${versions.jackson}",
       jacksonDatatypeJsr310           : "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}",
       javaxInject                     : "javax.inject:javax.inject:${versions.javaxInject}",
