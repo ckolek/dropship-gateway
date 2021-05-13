@@ -1,0 +1,28 @@
+extend type Query {
+    shipment(id: ID!) : Package
+}
+
+type Package {
+    id: ID!
+    order: Order!
+    warehouse: Warehouse!
+    senderContact: Contact!
+    senderAddress: Address!
+    recipientContact: Contact!
+    recipientAddress: Address!
+    serviceLevel: ServiceLevel!
+    trackingNumber: String!
+    items: [PackageItem!]!
+    timeShipped: DateTime!
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}
+
+type PackageItem {
+    id: ID!
+    package: Package!
+    orderItem: OrderItem!
+    quantity: Int!
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}

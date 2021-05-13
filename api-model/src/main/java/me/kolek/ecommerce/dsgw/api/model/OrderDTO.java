@@ -5,7 +5,9 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,10 +18,17 @@ public class OrderDTO {
   private String orderNumber;
   private String customerOrderNumber;
   private WarehouseDTO warehouse;
-  private ContactDTO contact;
-  private AddressDTO address;
+  private RecipientDTO recipient;
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private List<OrderItemDTO> items;
   private ServiceLevelDTO serviceLevel;
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
+  private List<PackageDTO> packages;
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
+  private List<InvoiceDTO> invoices;
   private Status status;
   private OrderCancelCodeDTO cancelCode;
   private String cancelReason;

@@ -19,5 +19,7 @@ public class CatalogItemDTO extends CatalogEntryDTO {
   public static final String TYPE = "item";
 
   private CatalogDTO catalog;
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private List<CatalogItemOptionDTO> options;
 }

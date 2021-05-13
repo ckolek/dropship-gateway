@@ -6,7 +6,24 @@ type Contact {
     email: String
 }
 
+input ContactInput {
+    name: String,
+    phone: String,
+    email: String
+}
+
 type Address {
+    line1: String!
+    line2: String
+    line3: String
+    city: String!
+    state: String
+    province: String
+    postalCode: String!
+    country: String!
+}
+
+input AddressInput {
     line1: String!
     line2: String
     line3: String

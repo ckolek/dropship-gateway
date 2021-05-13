@@ -66,6 +66,12 @@ public class Order {
   @JoinColumn(name = "service_level_id")
   private ServiceLevel serviceLevel;
 
+  @OneToMany(mappedBy = "order")
+  private List<Package> packages;
+
+  @OneToMany(mappedBy = "order")
+  private List<Invoice> invoices;
+
   @Column(name = "status", nullable = false)
   @Enumerated(EnumType.STRING)
   private Status status;

@@ -9,12 +9,11 @@ import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRequest;
 import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Type;
 import me.kolek.ecommerce.dsgw.events.OrderEventEmitter;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.SubmitOrderAction;
-import me.kolek.ecommerce.dsgw.model.Address;
 import me.kolek.ecommerce.dsgw.model.CatalogItem;
-import me.kolek.ecommerce.dsgw.model.Contact;
 import me.kolek.ecommerce.dsgw.model.Order;
-import me.kolek.ecommerce.dsgw.model.Order.Status;
 import me.kolek.ecommerce.dsgw.model.OrderItem;
+import me.kolek.ecommerce.dsgw.model.mapper.OrderItemMapper;
+import me.kolek.ecommerce.dsgw.model.mapper.OrderMapper;
 import me.kolek.ecommerce.dsgw.registry.CarrierRegistry;
 import me.kolek.ecommerce.dsgw.registry.WarehouseRegistry;
 import me.kolek.ecommerce.dsgw.repository.CatalogItemRepository;
@@ -24,16 +23,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class SubmitOrderActionProcessor extends BaseOrderActionProcessor<SubmitOrderAction> {
 
+  private final OrderMapper orderMapper;
+  private final OrderItemMapper orderItemMapper;
   private final WarehouseRegistry warehouseRegistry;
   private final CatalogItemRepository catalogItemRepository;
   private final CarrierRegistry carrierRegistry;
   private final OrderEventEmitter eventEmitter;
 
   @Inject
-  public SubmitOrderActionProcessor(OrderRepository orderRepository,
-      WarehouseRegistry warehouseRegistry, CatalogItemRepository catalogItemRepository,
+  public SubmitOrderActionProcessor(OrderRepository orderRepository, OrderMapper orderMapper,
+      OrderItemMapper orderItemMapper, WarehouseRegistry warehouseRegistry, CatalogItemRepository catalogItemRepository,
       CarrierRegistry carrierRegistry, OrderEventEmitter eventEmitter) {
     super(orderRepository);
+    this.orderMapper = orderMapper;
+    this.orderItemMapper = orderItemMapper;
     this.warehouseRegistry = warehouseRegistry;
     this.catalogItemRepository = catalogItemRepository;
     this.carrierRegistry = carrierRegistry;
@@ -49,26 +52,7 @@ public class SubmitOrderActionProcessor extends BaseOrderActionProcessor<SubmitO
   protected void process(SubmitOrderAction action, Order order, OrderActionResultBuilder result) {
     SubmitOrderRequest request = action.getRequest();
 
-    order.setExternalId(request.getOrderNumber());
-    order.setCustomerOrderNumber(request.getCustomerOrderNumber());
-    order.setContact(Contact.builder()
-        .name(request.getRecipient().getName())
-        .email(request.getRecipient().getEmail())
-        .phone(request.getRecipient().getPhone())
-        .build());
-    order.setAddress(Address.builder()
-        .line1(request.getRecipient().getLine1())
-        .line2(request.getRecipient().getLine2())
-        .line3(request.getRecipient().getLine3())
-        .city(request.getRecipient().getCity())
-        .state(request.getRecipient().getState())
-        .province(request.getRecipient().getProvince())
-        .postalCode(request.getRecipient().getPostalCode())
-        .country(request.getRecipient().getCountry())
-        .build());
-    order.setStatus(Status.NEW);
-    order.setTimeOrdered(request.getTimeOrdered());
-    order.setTimeReleased(request.getTimeReleased());
+    order = orderMapper.submitOrderRequestToOrder(request, order);
 
     processWarehouse(request, order, result);
     processItems(request, order, result);
@@ -132,15 +116,11 @@ public class SubmitOrderActionProcessor extends BaseOrderActionProcessor<SubmitO
       return;
     }
 
-    order.addItem(OrderItem.builder()
-        .lineNumber(lineNumber)
-        .catalogItem(candidates.get(0))
-        .quantity(item.getQuantity())
-        .customization(item.getCustomization())
-        .expectedShipDate(item.getExpectedShipDate())
-        .expectedDeliveryDate(item.getExpectedDeliveryDate())
-        .status(Status.NEW)
-        .build());
+    OrderItem orderItem = orderItemMapper.submitOrderItemToOrderItem(item);
+    orderItem.setLineNumber(lineNumber);
+    orderItem.setCatalogItem(candidates.get(0));
+
+    order.addItem(orderItem);
   }
 
   private void processServiceLevel(SubmitOrderRequest request, Order order,

@@ -17,9 +17,13 @@ import me.kolek.ecommerce.dsgw.events.config.EventProperties;
 import me.kolek.ecommerce.dsgw.internal.model.queue.MessageAttributes;
 import me.kolek.ecommerce.dsgw.model.Order;
 import me.kolek.ecommerce.dsgw.model.mapper.CatalogEntryMapper;
+import me.kolek.ecommerce.dsgw.model.mapper.InvoiceItemMapper;
+import me.kolek.ecommerce.dsgw.model.mapper.InvoiceMapper;
 import me.kolek.ecommerce.dsgw.model.mapper.MappingFieldSelection;
 import me.kolek.ecommerce.dsgw.model.mapper.OrderItemMapper;
 import me.kolek.ecommerce.dsgw.model.mapper.OrderMapper;
+import me.kolek.ecommerce.dsgw.model.mapper.PackageItemMapper;
+import me.kolek.ecommerce.dsgw.model.mapper.PackageMapper;
 import me.kolek.ecommerce.dsgw.model.mapper.ServiceLevelMapper;
 import me.kolek.ecommerce.dsgw.model.mapper.WarehouseMapper;
 import org.springframework.stereotype.Component;
@@ -43,6 +47,12 @@ public class OrderEventEmitter {
                       item.field(CatalogEntryMapper.FIELD__CATALOG))))
       .field(OrderMapper.FIELD__SERVICE_LEVEL, serviceLevel ->
           serviceLevel.field(ServiceLevelMapper.FIELD__CARRIER))
+      .field(OrderMapper.FIELD__PACKAGES, packages ->
+          packages.field(PackageMapper.FIELD__ITEMS, items ->
+              items.field(PackageItemMapper.FIELD__ORDER_ITEM)))
+      .field(OrderMapper.FIELD__INVOICES, invoices ->
+          invoices.field(InvoiceMapper.FIELD__ITEMS, items ->
+              items.field(InvoiceItemMapper.FIELD__ORDER_ITEM)))
       .build();
 
   public void emitEvent(Order order, OrderEventDTO.Type type) throws Exception {

@@ -13,13 +13,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @Data
 @Builder
-public class CatalogDTO {
+public class InvoiceDTO {
+
   private String id;
-  private String externalId;
-  private SupplierDTO supplier;
+  private OrderDTO order;
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
-  private List<CatalogItemDTO> items;
+  private List<InvoiceItemDTO> items;
   private OffsetDateTime timeCreated;
   private OffsetDateTime timeUpdated;
 }

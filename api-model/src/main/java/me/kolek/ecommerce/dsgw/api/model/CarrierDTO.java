@@ -5,7 +5,9 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,6 +16,8 @@ import lombok.NoArgsConstructor;
 public class CarrierDTO {
   private String id;
   private String name;
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private List<ServiceLevelDTO> serviceLevels;
   private OffsetDateTime timeCreated;
   private OffsetDateTime timeUpdated;

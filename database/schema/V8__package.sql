@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS package
     recipient_province    TEXT        NULL,
     recipient_postal_code TEXT        NOT NULL,
     recipient_country     CHAR(3)     NOT NULL,
+    service_level_id      BIGINT      NOT NULL,
     tracking_number       TEXT        NOT NULL,
     time_shipped          TIMESTAMPTZ NOT NULL,
     time_created          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -34,10 +35,12 @@ CREATE TABLE IF NOT EXISTS package
     CONSTRAINT package_pk PRIMARY KEY (id),
     CONSTRAINT package_uk01 UNIQUE (warehouse_id, external_id),
     CONSTRAINT package_fk01 FOREIGN KEY (order_id) REFERENCES "order" (id),
-    CONSTRAINT package_fk02 FOREIGN KEY (warehouse_id) REFERENCES warehouse (id)
+    CONSTRAINT package_fk02 FOREIGN KEY (warehouse_id) REFERENCES warehouse (id),
+    CONSTRAINT package_fk03 FOREIGN KEY (service_level_id) REFERENCES service_level (id)
 );
 
 CREATE INDEX IF NOT EXISTS package_idx01 ON package (order_id);
+CREATE INDEX IF NOT EXISTS package_idx02 ON package (service_level_id);
 
 ALTER TABLE package OWNER TO dsgw;
 REVOKE ALL ON TABLE package FROM PUBLIC;

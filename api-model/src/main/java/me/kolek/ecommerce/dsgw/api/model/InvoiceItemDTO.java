@@ -1,25 +1,22 @@
 package me.kolek.ecommerce.dsgw.api.model;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
-public class CatalogDTO {
+public class InvoiceItemDTO {
+
   private String id;
-  private String externalId;
-  private SupplierDTO supplier;
-  @EqualsAndHashCode.Exclude
-  @ToString.Exclude
-  private List<CatalogItemDTO> items;
+  private InvoiceDTO invoice;
+  private OrderItemDTO orderItem;
+  private Integer quantity;
+  private Float unitCost;
   private OffsetDateTime timeCreated;
   private OffsetDateTime timeUpdated;
 }

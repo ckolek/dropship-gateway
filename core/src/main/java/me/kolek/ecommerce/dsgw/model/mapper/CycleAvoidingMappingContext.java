@@ -22,11 +22,12 @@ public class CycleAvoidingMappingContext {
     @SuppressWarnings("unchecked")
     @BeforeMapping
     public <T> T getMappedInstance(Object source, @TargetType Class<T> targetType) {
-        return (T) knownInstances.get( source );
+        Object instance = knownInstances.get( source );
+        return targetType.isInstance(instance) ? (T) instance : null;
     }
 
     @BeforeMapping
     public void storeMappedInstance(Object source, @MappingTarget Object target) {
-        knownInstances.put( source, target );
+        knownInstances.putIfAbsent( source, target );
     }
 }

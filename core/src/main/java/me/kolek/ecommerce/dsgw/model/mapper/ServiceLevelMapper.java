@@ -10,6 +10,7 @@ import org.mapstruct.Builder;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(uses = {UuidMapper.class, CarrierMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class ServiceLevelMapper {
@@ -24,7 +25,7 @@ public abstract class ServiceLevelMapper {
       @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
 
   @AfterMapping
-  protected void afterMapping(ServiceLevel serviceLevel, ServiceLevelDTO serviceLevelDTO,
+  protected void afterMapping(ServiceLevel serviceLevel, @MappingTarget ServiceLevelDTO serviceLevelDTO,
       @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection) {
     mapIfSelected(selection, FIELD__CARRIER, subSelection -> serviceLevelDTO
         .setCarrier(carrierMapper.carrierToDto(serviceLevel.getCarrier(), context, subSelection)));

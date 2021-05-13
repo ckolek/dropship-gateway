@@ -10,6 +10,8 @@ import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import me.kolek.ecommerce.dsgw.api.model.AddressDTO;
+import me.kolek.ecommerce.dsgw.api.model.ContactDTO;
 import me.kolek.ecommerce.dsgw.api.model.OrderDTO;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.Status;
@@ -36,15 +38,19 @@ public class OrderManagement {
         .customerOrderNumber(customerOrderNumber)
         .warehouseCode("CWK1")
         .recipient(SubmitOrderRecipient.builder()
-            .name("Chris Kolek")
-            .email("ckolek@gmail.com")
-            .phone("978-846-4525")
-            .line1("100 Heard Street")
-            .line2("Unit 314")
-            .city("Chelsea")
-            .state("MA")
-            .postalCode("02150")
-            .country("USA")
+            .contact(ContactDTO.builder()
+                .name("Chris Kolek")
+                .email("ckolek@gmail.com")
+                .phone("978-846-4525")
+                .build())
+            .address(AddressDTO.builder()
+                .line1("100 Heard Street")
+                .line2("Unit 314")
+                .city("Chelsea")
+                .state("MA")
+                .postalCode("02150")
+                .country("USA")
+                .build())
             .build())
         .item(SubmitOrderItem.builder()
             .sku("CK-1001")

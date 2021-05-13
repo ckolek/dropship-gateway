@@ -1,17 +1,15 @@
-package me.kolek.ecommerce.dsgw.api.model.action.order.submit;
+package me.kolek.ecommerce.dsgw.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import me.kolek.ecommerce.dsgw.api.model.AddressDTO;
-import me.kolek.ecommerce.dsgw.api.model.ContactDTO;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
-public class SubmitOrderRecipient {
+public class RecipientDTO {
   private ContactDTO contact;
   private AddressDTO address;
 }

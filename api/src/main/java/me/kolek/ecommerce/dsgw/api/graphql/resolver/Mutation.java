@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.acknowledge.AcknowledgeOrderRequest;
 import me.kolek.ecommerce.dsgw.api.model.action.order.cancel.CancelOrderRequest;
+import me.kolek.ecommerce.dsgw.api.model.action.order.ship.OrderShipmentRequest;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRequest;
 import me.kolek.ecommerce.dsgw.api.service.OrderActionService;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.AcknowledgeOrderAction;
+import me.kolek.ecommerce.dsgw.internal.model.order.action.AddOrderShipmentAction;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.CancelOrderAction;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.OrderAction;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.SubmitOrderAction;
@@ -24,8 +26,8 @@ public class Mutation implements GraphQLMutationResolver {
     return processOrderAction(SubmitOrderAction.builder().request(request).build(), async);
   }
 
-  public OrderActionResult acknowledgeOrder(String orderId, AcknowledgeOrderRequest request, Boolean async)
-      throws Exception {
+  public OrderActionResult acknowledgeOrder(String orderId, AcknowledgeOrderRequest request,
+      Boolean async) throws Exception {
     return processOrderAction(
         AcknowledgeOrderAction.builder().orderId(orderId).request(request).build(), async);
   }
@@ -34,6 +36,12 @@ public class Mutation implements GraphQLMutationResolver {
       throws Exception {
     return processOrderAction(CancelOrderAction.builder().orderId(orderId).request(request).build(),
         async);
+  }
+
+  public OrderActionResult addOrderShipment(String orderId, OrderShipmentRequest request,
+      Boolean async) throws Exception {
+    return processOrderAction(
+        AddOrderShipmentAction.builder().orderId(orderId).request(request).build(), async);
   }
 
   private OrderActionResult processOrderAction(OrderAction<?> orderAction, Boolean async)

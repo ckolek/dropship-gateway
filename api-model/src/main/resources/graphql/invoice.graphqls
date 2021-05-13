@@ -1,0 +1,21 @@
+extend type Query {
+    invoice(id: ID!) : Invoice
+}
+
+type Invoice {
+    id: ID!
+    order: Order!
+    items: [InvoiceItem!]!
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}
+
+type InvoiceItem {
+    id: ID!
+    invoice: Invoice!
+    orderItem: OrderItem!
+    quantity: Int!
+    unitCost: Float!
+    timeCreated: DateTime!
+    timeUpdated: DateTime!
+}

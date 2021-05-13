@@ -15,17 +15,8 @@ input SubmitOrderRequest {
 }
 
 input SubmitOrderRecipient {
-    name: String!
-    phone: String
-    email: String
-    line1: String!
-    line2: String
-    line3: String
-    city: String!
-    state: String
-    province: String
-    postalCode: String
-    country: String!
+    contact: ContactInput!
+    address: AddressInput!
 }
 
 input SubmitOrderItem {

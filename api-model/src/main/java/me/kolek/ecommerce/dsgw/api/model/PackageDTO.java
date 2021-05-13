@@ -5,7 +5,9 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,6 +24,8 @@ public class PackageDTO {
   private AddressDTO recipientAddress;
   private ServiceLevelDTO serviceLevel;
   private String trackingNumber;
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private List<PackageItemDTO> items;
   private OffsetDateTime timeShipped;
   private OffsetDateTime timeCreated;

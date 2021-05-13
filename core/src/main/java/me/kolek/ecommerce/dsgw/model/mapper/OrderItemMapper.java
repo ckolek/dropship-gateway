@@ -4,6 +4,7 @@ import static me.kolek.ecommerce.dsgw.model.mapper.MapperUtil.mapIfSelected;
 
 import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.OrderItemDTO;
+import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderItem;
 import me.kolek.ecommerce.dsgw.model.OrderItem;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Builder;
@@ -39,4 +40,7 @@ public abstract class OrderItemMapper {
         catalogEntryMapper
             .catalogItemToEntryDto(orderItem.getCatalogItem(), context, subSelection)));
   }
+
+  @Mapping(target = "status", constant = "NEW")
+  public abstract OrderItem submitOrderItemToOrderItem(SubmitOrderItem submitOrderItem);
 }
