@@ -129,13 +129,16 @@ public class SubmitOrderActionProcessor extends BaseOrderActionProcessor<SubmitO
       fail(result, "both carrier name and mode are required to identify service level");
       return;
     }
-    if (request.getCarrierName() == null) {
-      return;
+    if (request.getCarrierName() != null) {
+      carrierRegistry
+          .findServiceLevelByCarrierNameAndMode(request.getCarrierName(), request.getCarrierMode())
+          .ifPresentOrElse(order::setServiceLevel, () -> fail(result,
+              "carrier/service level \"" + request.getCarrierName() + "/" + request.getCarrierMode()
+                  + "\" not found"));
+    } else if (request.getCarrierServiceLevelCode() != null) {
+      carrierRegistry.findServiceLevelByCode(request.getCarrierServiceLevelCode())
+          .ifPresentOrElse(order::setServiceLevel, () -> fail(result,
+              "carrier service level \"" + request.getCarrierServiceLevelCode() + "\" not found"));
     }
-    carrierRegistry
-        .findServiceLevelByCarrierNameAndMode(request.getCarrierName(), request.getCarrierMode())
-        .ifPresentOrElse(order::setServiceLevel, () -> fail(result,
-            "carrier/service level \"" + request.getCarrierName() + "/" + request.getCarrierMode()
-                + "\" not found"));
   }
 }

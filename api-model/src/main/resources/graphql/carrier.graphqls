@@ -5,7 +5,7 @@ extend type Query {
         pageSize: Int,
         pageOffset: Int) : CarrierConnection
 
-    serviceLevel(id: ID) : ServiceLevel
+    serviceLevel(id: ID, code: String) : ServiceLevel
 }
 
 type Carrier {
@@ -16,7 +16,7 @@ type Carrier {
 
     serviceLevels(
         pageSize: Int,
-        pageOffset: Int) : ServiceLevelConnection
+        pageOffset: Int) : ServiceLevelConnection!
 }
 
 type CarrierConnection implements Connection {
@@ -33,6 +33,7 @@ type ServiceLevel {
     id: ID!
     carrier: Carrier!
     mode: String!
+    code: String!
 }
 
 type ServiceLevelConnection implements Connection {

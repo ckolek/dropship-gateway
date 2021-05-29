@@ -10,4 +10,6 @@ public interface ServiceLevelRepository extends ExtendedJpaRepository<ServiceLev
 
   @Query("select sl from ServiceLevel sl where sl.carrier.name = :carrierName and sl.mode = :mode")
   Optional<ServiceLevel> findByCarrierNameAndMode(String carrierName, String mode);
+
+  Optional<ServiceLevel> findByCode(String code);
 }

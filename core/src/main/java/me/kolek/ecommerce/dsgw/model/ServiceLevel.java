@@ -28,12 +28,15 @@ public class ServiceLevel {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @Column(name = "mode", nullable = false, length = 64)
-  private String mode;
-
   @ManyToOne(optional = false)
   @JoinColumn(name = "carrier_id", nullable = false)
   private Carrier carrier;
+
+  @Column(name = "mode", nullable = false, length = 64)
+  private String mode;
+
+  @Column(name = "code", nullable = false, length = 64)
+  private String code;
 
   @CreationTimestamp
   @Column(name = "time_created", nullable = false)

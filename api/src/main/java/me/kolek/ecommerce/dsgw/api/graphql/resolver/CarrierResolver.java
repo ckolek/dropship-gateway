@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CarrierResolver implements GraphQLResolver<CarrierDTO> {
-  public ServiceLevelDTO serviceLevel(CarrierDTO carrierDTO, String mode) {
+  public ServiceLevelDTO serviceLevel(CarrierDTO carrierDTO, String name) {
     return null;
   }
 

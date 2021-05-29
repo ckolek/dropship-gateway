@@ -21,6 +21,7 @@ public class SubmitOrderRequest {
   private List<SubmitOrderItem> items;
   private String carrierName;
   private String carrierMode;
+  private String carrierServiceLevelCode;
   private OffsetDateTime timeOrdered;
   private OffsetDateTime timeReleased;
 }

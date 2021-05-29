@@ -38,7 +38,7 @@ public class Query implements GraphQLQueryResolver {
     return null;
   }
 
-  public ServiceLevelDTO serviceLevel(String id) {
+  public ServiceLevelDTO serviceLevel(String id, String code) {
     return null;
   }
 

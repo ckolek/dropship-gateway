@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 public class ServiceLevelDTO {
   private String id;
   private CarrierDTO carrier;
-  private String mode;
+  private String name;
+  private String code;
   private OffsetDateTime timeCreated;
   private OffsetDateTime timeUpdated;
 }

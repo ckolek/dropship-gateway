@@ -10,6 +10,7 @@ input SubmitOrderRequest {
     items: [SubmitOrderItem!]!
     carrierName: String
     carrierMode: String
+    carrierServiceLevelCode: String
     timeOrdered: DateTime!
     timeReleased: DateTime!
 }

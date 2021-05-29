@@ -69,7 +69,6 @@ public class OrderManagement {
   @When("A request to acknowledge the order is submitted")
   public void acknowledgeOrder() throws Exception {
     var request = AcknowledgeOrderRequest.builder()
-
         .build();
 
     orderActionResult = graphQLInvoker.invoke("AcknowledgeOrder",
@@ -91,13 +90,13 @@ public class OrderManagement {
 
   @Then("A successful order action response is returned")
   public void orderWithIdWasReturned() {
-    assertThat(orderActionResult).isNotNull();
+    assertThat(orderActionResult).describedAs("result").isNotNull();
     if (orderActionResult.getStatus() != Status.SUCCESSFUL) {
       fail("order action failed with reasons:\n%s",
           orderActionResult.getReasons().stream().map(r -> " - " + r.getDescription())
               .collect(Collectors.joining("\n")));
     }
-    assertThat(orderActionResult.getOrderId()).isNotBlank();
+    assertThat(orderActionResult.getOrderId()).describedAs("result order ID").isNotBlank();
   }
 
   @Then("The order exists with status {orderStatus}")
@@ -108,6 +107,6 @@ public class OrderManagement {
   private void tryCheckOrderWithStatus(String id, OrderDTO.Status orderStatus) throws Exception {
     OrderDTO order = graphQLInvoker.invoke("GetOrder", Map.of("id", id), OrderDTO.class);
     assertThat(order).withFailMessage("order with ID %s not found", id).isNotNull();
-    assertThat(order.getStatus()).isEqualTo(orderStatus);
+    assertThat(order.getStatus()).describedAs("order status").isEqualTo(orderStatus);
   }
 }
