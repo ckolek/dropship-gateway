@@ -1,6 +1,7 @@
 package me.kolek.ecommerce.dsgw.model;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -36,7 +37,7 @@ public class Package {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @Column(name = "external_id", nullable = false, length = 32)
+  @Column(name = "external_id", length = 32)
   private String externalId;
 
   @ManyToOne(optional = false)
@@ -108,4 +109,12 @@ public class Package {
   @Version
   @Column(name = "record_version", nullable = false)
   private Short recordVersion;
+
+  public void addItem(PackageItem item) {
+    if (items == null) {
+      items = new ArrayList<>();
+    }
+    item.setPackage(this);
+    items.add(item);
+  }
 }

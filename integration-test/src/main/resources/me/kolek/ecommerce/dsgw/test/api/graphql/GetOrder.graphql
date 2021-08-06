@@ -2,5 +2,37 @@ query GetOrder($id: ID, $orderNumber: String) {
     order(id: $id, orderNumber: $orderNumber) {
         id,
         status
+        warehouse {
+            code
+            supplierCode
+            address {
+                line1, line2, line3, city, state, province, postalCode, country
+            }
+        }
+        items {
+            lineNumber
+            quantity
+        }
+        recipient {
+            contact {
+                name, email, phone
+            }
+            address {
+                line1, line2, line3, city, state, province, postalCode, country
+            }
+        }
+        serviceLevel {
+            code
+        }
+        cancelCode {
+            code
+        }
+        cancelReason
+        packages {
+            timeShipped
+        }
+        timeCreated
+        timeAcknowledged
+        timeCancelled
     }
 }

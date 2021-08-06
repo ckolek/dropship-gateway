@@ -4,6 +4,7 @@ extend type Query {
 
 type Package {
     id: ID!
+    manifestId: String
     order: Order!
     warehouse: Warehouse!
     senderContact: Contact!

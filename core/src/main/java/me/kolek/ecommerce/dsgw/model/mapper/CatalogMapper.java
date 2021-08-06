@@ -2,12 +2,9 @@ package me.kolek.ecommerce.dsgw.model.mapper;
 
 import static me.kolek.ecommerce.dsgw.model.mapper.MapperUtil.mapIfSelected;
 
-import java.util.List;
 import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.CatalogDTO;
-import me.kolek.ecommerce.dsgw.api.model.CatalogItemDTO;
 import me.kolek.ecommerce.dsgw.model.Catalog;
-import me.kolek.ecommerce.dsgw.model.CatalogItem;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Builder;
 import org.mapstruct.Context;
@@ -15,8 +12,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(uses = {UuidMapper.class,
-    CatalogEntryMapper.class}, builder = @Builder(disableBuilder = true))
+@Mapper(uses = {CatalogEntryMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class CatalogMapper {
 
   public static final String FIELD__SUPPLIER = "supplier";
@@ -24,6 +20,9 @@ public abstract class CatalogMapper {
 
   @Inject
   private SupplierMapper supplierMapper;
+
+  @Inject
+  private CatalogEntryMapper catalogEntryMapper;
 
   @Mapping(target = FIELD__SUPPLIER, ignore = true)
   @Mapping(target = FIELD__ITEMS, ignore = true)
@@ -36,13 +35,10 @@ public abstract class CatalogMapper {
     mapIfSelected(selection, FIELD__SUPPLIER, subSelection -> catalogDTO
         .setSupplier(supplierMapper.supplierToDto(catalog.getSupplier(), context, subSelection)));
     mapIfSelected(selection, FIELD__ITEMS, subSelection -> catalogDTO
-        .setItems(catalogItemListToDtoList(catalog.getItems(), context, subSelection)));
+        .setItems(catalogEntryMapper.catalogItemsToDtoList(catalog.getItems(), context, subSelection)));
 
     if (context.isSetParentReferences() && catalogDTO.getItems() != null) {
       catalogDTO.getItems().forEach(item -> item.setCatalog(catalogDTO));
     }
   }
-
-  protected abstract List<CatalogItemDTO> catalogItemListToDtoList(List<CatalogItem> catalogItems,
-      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
 }

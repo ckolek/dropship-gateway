@@ -71,7 +71,51 @@ function create_topic_to_queue_subscription() {
   done
 }
 
+function create_lambda() {
+  attempts=0
+  retCode=-1
+  while [[ $attempts -lt 10 ]] && [[ $retCode -ne 0 ]]; do
+    aws --endpoint-url=${AWS_URL} lambda create-function \
+      --function-name $1 \
+      --runtime $2 \
+      --handler $3 \
+      --memory-size 128 \
+      --zip-file fileb:///aws/lambda/$1.zip \
+      --role arn:aws:iam::${AWS_ACCOUNT_ID}:role/dummy \
+      --environment Variables={$4} \
+      --timeout 30
+    retCode=$?
+    ((attempts+=1))
+    if [ $retCode -ne 0 ]; then
+      echo failed with exit code $retCode - retry $attempts...
+      sleep 1
+    fi
+  done
+}
+
+function create_topic_to_lambda_subscription() {
+  attempts=0
+  retCode=-1
+  while [[ $attempts -lt 10 ]] && [[ $retCode -ne 0 ]]; do
+    aws --endpoint-url=${AWS_URL} sns subscribe \
+        --topic-arn "arn:aws:sns:${AWS_DEFAULT_REGION}:${AWS_ACCOUNT_ID}:$1" \
+        --protocol lambda \
+        --notification-endpoint "arn:aws:lambda:${AWS_DEFAULT_REGION}:${AWS_ACCOUNT_ID}:function:$2"
+    retCode=$?
+    ((attempts+=1))
+    if [ $retCode -ne 0 ]; then
+      echo failed with exit code $retCode - retry $attempts...
+      sleep 1
+    fi
+  done
+}
+
 create_queue "order-actions"
+create_queue "order-action-results"
 create_topic "order-events"
 create_queue "order-events"
 create_topic_to_queue_subscription "order-events" "order-events"
+create_lambda "order-event-handler" "java11" \
+              "me.kolek.ecommerce.dsgw.events.handler.OrderEventHandler" \
+              "ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS}"
+create_topic_to_lambda_subscription "order-events" "order-event-handler"

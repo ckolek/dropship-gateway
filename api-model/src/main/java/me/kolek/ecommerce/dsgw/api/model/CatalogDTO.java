@@ -19,7 +19,7 @@ public class CatalogDTO {
   private SupplierDTO supplier;
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
-  private List<CatalogItemDTO> items;
+  private List<CatalogEntryDTO> items;
   private OffsetDateTime timeCreated;
   private OffsetDateTime timeUpdated;
 }

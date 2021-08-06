@@ -1,4 +1,4 @@
-package me.kolek.ecommerce.dsgw.api.graphql.service;
+package me.kolek.ecommerce.dsgw.api.service;
 
 import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;

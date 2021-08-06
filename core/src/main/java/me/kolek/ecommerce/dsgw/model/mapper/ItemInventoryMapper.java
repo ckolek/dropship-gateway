@@ -12,7 +12,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(uses = {UuidMapper.class, CatalogEntryMapper.class,
+@Mapper(uses = {CatalogEntryMapper.class,
     WarehouseMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class ItemInventoryMapper {
 
@@ -35,7 +35,7 @@ public abstract class ItemInventoryMapper {
       @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection) {
     mapIfSelected(selection, FIELD__CATALOG_ENTRY, subSelection -> inventoryDTO.setCatalogEntry(
         catalogEntryMapper
-            .catalogItemToEntryDto(itemInventory.getCatalogItem(), context, subSelection)));
+            .catalogItemToDto(itemInventory.getCatalogItem(), context, subSelection)));
     mapIfSelected(selection, FIELD__WAREHOUSE, subSelection -> inventoryDTO.setWarehouse(
         warehouseMapper.warehouseToDto(itemInventory.getWarehouse(), context, subSelection)));
   }

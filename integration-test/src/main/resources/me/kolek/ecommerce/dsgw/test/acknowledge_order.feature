@@ -1,4 +1,4 @@
-Feature: Submit Order
+Feature: Acknowledge Order
   An order can be acknowledged (accepted or rejected)
 
   Background:
@@ -11,5 +11,6 @@ Feature: Submit Order
     And An order event of type ORDER_CREATED is emitted
     When A request to acknowledge the order is submitted
     Then A successful order action response is returned
-    And The order exists with status ACKNOWLEDGED
+    And The order is acknowledged
     And An order event of type ORDER_ACKNOWLEDGED is emitted
+    And The order can be found by ID with the correct status

@@ -8,5 +8,7 @@ dependencies {
   implementation libraries.camelSpringBootAwsSqsStarter
   implementation libraries.camelSpringBootJacksonStarter
 
+  testImplementation project(':test-support')
+
   annotationProcessor libraries.springBootConfigurationProcessor
 }

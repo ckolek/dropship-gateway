@@ -1,0 +1,9 @@
+mutation AddOrderShipment($orderId: ID!, $request: OrderShipmentRequest!) {
+    addOrderShipment(orderId: $orderId, request: $request) {
+        orderId
+        status
+        reasons {
+            description
+        }
+    }
+}

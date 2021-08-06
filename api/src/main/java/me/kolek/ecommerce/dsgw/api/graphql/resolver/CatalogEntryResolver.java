@@ -3,11 +3,13 @@ package me.kolek.ecommerce.dsgw.api.graphql.resolver;
 import graphql.kickstart.tools.GraphQLResolver;
 import me.kolek.ecommerce.dsgw.api.model.CatalogEntryDTO;
 import me.kolek.ecommerce.dsgw.api.model.InventoryConnection;
+import org.springframework.stereotype.Component;
 
-public class CatalogEntryResolver<CE extends CatalogEntryDTO> implements GraphQLResolver<CE> {
+@Component
+public class CatalogEntryResolver implements GraphQLResolver<CatalogEntryDTO> {
 
-  public InventoryConnection inventory(CE catalogEntryDTO, String warehouseId, int pageSize,
-      int pageOffset) {
+  public InventoryConnection inventory(CatalogEntryDTO catalogEntryDTO, String warehouseId,
+      int pageSize, int pageOffset) {
     return null;
   }
 }

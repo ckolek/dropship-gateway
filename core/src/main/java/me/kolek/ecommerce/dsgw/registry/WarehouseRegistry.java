@@ -22,13 +22,21 @@ public class WarehouseRegistry implements Registry {
   private final LoadingCache<String, Optional<Warehouse>> warehousesByCode = Caffeine.newBuilder()
       .build(code -> getLoader().loadWarehouseByCode(code));
 
+  private final LoadingCache<String, Optional<Warehouse>> warehousesBySupplierCode = Caffeine.newBuilder()
+      .build(code -> getLoader().loadWarehouseBySupplierCode(code));
+
   public Optional<Warehouse> findWarehouseByCode(String code) {
     return warehousesByCode.get(code);
+  }
+
+  public Optional<Warehouse> findWarehouseBySupplierCode(String code) {
+    return warehousesBySupplierCode.get(code);
   }
 
   @Override
   public void refresh() {
     warehousesByCode.invalidateAll();
+    warehousesBySupplierCode.invalidateAll();
   }
 
   @Component
@@ -40,6 +48,11 @@ public class WarehouseRegistry implements Registry {
     @Transactional
     public Optional<Warehouse> loadWarehouseByCode(String code) {
       return warehouseRepository.findWarehouseByCode(code);
+    }
+
+    @Transactional
+    public Optional<Warehouse> loadWarehouseBySupplierCode(String supplierCode) {
+      return warehouseRepository.findWarehouseBySupplierCode(supplierCode);
     }
   }
 }

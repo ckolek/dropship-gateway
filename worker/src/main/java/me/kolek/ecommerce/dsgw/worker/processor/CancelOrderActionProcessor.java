@@ -1,8 +1,10 @@
 package me.kolek.ecommerce.dsgw.worker.processor;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.OrderActionResultBuilder;
 import me.kolek.ecommerce.dsgw.api.model.action.order.cancel.CancelOrderRequest;
 import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Type;
@@ -12,21 +14,21 @@ import me.kolek.ecommerce.dsgw.model.Order;
 import me.kolek.ecommerce.dsgw.model.Order.Status;
 import me.kolek.ecommerce.dsgw.model.OrderCancelCode;
 import me.kolek.ecommerce.dsgw.model.OrderItem;
-import me.kolek.ecommerce.dsgw.repository.OrderCancelCodeRepository;
+import me.kolek.ecommerce.dsgw.registry.OrderCancelCodeRegistry;
 import me.kolek.ecommerce.dsgw.repository.OrderRepository;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CancelOrderActionProcessor extends BaseOrderActionProcessor<CancelOrderAction> {
 
-  private final OrderCancelCodeRepository orderCancelCodeRepository;
+  private final OrderCancelCodeRegistry orderCancelCodeRegistry;
   private final OrderEventEmitter eventEmitter;
 
   @Inject
   public CancelOrderActionProcessor(OrderRepository orderRepository,
-      OrderCancelCodeRepository orderCancelCodeRepository, OrderEventEmitter eventEmitter) {
+      OrderCancelCodeRegistry orderCancelCodeRegistry, OrderEventEmitter eventEmitter) {
     super(orderRepository);
-    this.orderCancelCodeRepository = orderCancelCodeRepository;
+    this.orderCancelCodeRegistry = orderCancelCodeRegistry;
     this.eventEmitter = eventEmitter;
   }
 
@@ -48,25 +50,33 @@ public class CancelOrderActionProcessor extends BaseOrderActionProcessor<CancelO
       return;
     }
 
-    OrderCancelCode cancelCode = orderCancelCodeRepository.findByCode(request.getCancelCode())
-        .orElse(null);
-    if (cancelCode == null) {
-      fail(result, "cancel code " + request.getCancelCode() + " not found");
-      return;
-    }
+    findCancelCode(request.getCancelCode(), result).ifPresent(cancelCode -> {
+      OffsetDateTime timeCancelled = OffsetDateTime.now();
 
-    OffsetDateTime timeCancelled = OffsetDateTime.now();
-
-    cancelOrder(order, cancelCode, request.getCancelReason(), timeCancelled);
-    cancelItems(order, cancelCode, request.getCancelReason(), timeCancelled);
+      cancelOrder(order, cancelCode, request.getCancelReason(), timeCancelled);
+      cancelItems(order, cancelCode, request.getCancelReason(), timeCancelled);
+    });
   }
 
   @Override
   @SneakyThrows
-  protected Order processSuccessful(CancelOrderAction action, Order order) {
+  protected void processSuccessful(CancelOrderAction action, Order order) {
     eventEmitter.emitEvent(order, Type.ORDER_CANCELLED);
+  }
 
-    return order;
+  private Optional<OrderCancelCode> findCancelCode(String cancelCode,
+      OrderActionResult.OrderActionResultBuilder result) {
+    if (cancelCode == null) {
+      fail(result, "cancel code is required for order item with rejected quantity");
+      return Optional.empty();
+    }
+    OrderCancelCode orderCancelCode = orderCancelCodeRegistry.findOrderCancelCodeByCode(cancelCode)
+        .orElse(null);
+    if (orderCancelCode == null) {
+      fail(result, "cancel code " + cancelCode + " not found");
+      return Optional.empty();
+    }
+    return Optional.of(orderCancelCode);
   }
 
   private void cancelOrder(Order order, OrderCancelCode cancelCode, String cancelReason,

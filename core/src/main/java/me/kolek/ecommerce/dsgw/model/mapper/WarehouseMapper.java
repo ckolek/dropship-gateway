@@ -2,6 +2,9 @@ package me.kolek.ecommerce.dsgw.model.mapper;
 
 import static me.kolek.ecommerce.dsgw.model.mapper.MapperUtil.mapIfSelected;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.WarehouseDTO;
 import me.kolek.ecommerce.dsgw.model.Warehouse;
@@ -12,7 +15,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(uses = {UuidMapper.class, SupplierMapper.class}, builder = @Builder(disableBuilder = true))
+@Mapper(uses = {SupplierMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class WarehouseMapper {
 
   public static final String FIELD__SUPPLIER = "supplier";
@@ -22,6 +25,9 @@ public abstract class WarehouseMapper {
 
   @Mapping(target = FIELD__SUPPLIER, ignore = true)
   abstract WarehouseDTO warehouseToDto(Warehouse warehouse,
+      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
+
+  protected abstract List<WarehouseDTO> warehousesToDtoList(Collection<Warehouse> warehouse,
       @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
 
   @AfterMapping

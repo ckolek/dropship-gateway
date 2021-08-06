@@ -61,12 +61,8 @@ public class SubmitOrderActionProcessor extends BaseOrderActionProcessor<SubmitO
 
   @Override
   @SneakyThrows
-  protected Order processSuccessful(SubmitOrderAction action, Order order) {
-    order = orderRepository.save(order);
-
+  protected void processSuccessful(SubmitOrderAction action, Order order) {
     eventEmitter.emitEvent(order, Type.ORDER_CREATED);
-
-    return order;
   }
 
   @Override

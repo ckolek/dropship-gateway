@@ -8,22 +8,7 @@ extend type Query {
         pageOffset: Int) : InventoryConnection!
 }
 
-# graphql-tools bug: this overrides the existing CatalogEntry definition
-#extend interface CatalogEntry {
-#    inventory(
-#        warehouseId: ID,
-#        pageSize: Int,
-#        pageOffset: Int) : InventoryConnection!
-#}
-
-extend type CatalogItem {
-    inventory(
-        warehouseId: ID,
-        pageSize: Int,
-        pageOffset: Int) : InventoryConnection!
-}
-
-extend type CatalogItemOption {
+extend type CatalogEntry {
     inventory(
         warehouseId: ID,
         pageSize: Int,

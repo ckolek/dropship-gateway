@@ -1,0 +1,10 @@
+plugins {
+  id 'java-library'
+}
+
+dependencies {
+  api project(':api-model')
+  api project(':core')
+  implementation testLibraries.assertjCore
+  implementation testLibraries.mockitoCore
+}

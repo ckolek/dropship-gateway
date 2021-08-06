@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS package
 (
     id                    BIGSERIAL   NOT NULL,
-    external_id           TEXT        NOT NULL,
+    external_id           TEXT        NULL,
     order_id              BIGINT      NOT NULL,
     warehouse_id          BIGINT      NOT NULL,
     sender_name           TEXT        NULL,

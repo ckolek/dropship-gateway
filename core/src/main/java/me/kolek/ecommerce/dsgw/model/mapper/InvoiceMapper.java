@@ -2,6 +2,7 @@ package me.kolek.ecommerce.dsgw.model.mapper;
 
 import static me.kolek.ecommerce.dsgw.model.mapper.MapperUtil.mapIfSelected;
 
+import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.InvoiceDTO;
@@ -25,9 +26,15 @@ public abstract class InvoiceMapper {
   @Inject
   private OrderMapper orderMapper;
 
+  @Inject
+  private InvoiceItemMapper invoiceItemMapper;
+
   @Mapping(target = FIELD__ORDER, ignore = true)
   @Mapping(target = FIELD__ITEMS, ignore = true)
   public abstract InvoiceDTO invoiceToDto(Invoice invoice,
+      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
+
+  protected abstract List<InvoiceDTO> invoicesToDtoList(Collection<Invoice> invoices,
       @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
 
   @AfterMapping
@@ -35,14 +42,11 @@ public abstract class InvoiceMapper {
       @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection) {
     mapIfSelected(selection, FIELD__ORDER, subSelection -> invoiceDTO
         .setOrder(orderMapper.orderToDto(invoice.getOrder(), context, subSelection)));
-    mapIfSelected(selection, FIELD__ITEMS, subSelection -> invoiceDTO
-        .setItems(invoiceItemToDtoList(invoice.getItems(), context, subSelection)));
+    mapIfSelected(selection, FIELD__ITEMS, subSelection -> invoiceDTO.setItems(
+        invoiceItemMapper.invoiceItemsToDtoList(invoice.getItems(), context, subSelection)));
 
     if (context.isSetParentReferences() && invoiceDTO.getItems() != null) {
       invoiceDTO.getItems().forEach(item -> item.setInvoice(invoiceDTO));
     }
   }
-
-  protected abstract List<InvoiceItemDTO> invoiceItemToDtoList(List<InvoiceItem> items,
-      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
 }

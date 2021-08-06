@@ -1,6 +1,7 @@
 
 dependencies {
   implementation project(':api-model')
+  implementation project(':test-support')
   implementation testLibraries.assertjCore
   implementation libraries.awsSdkSqs
   implementation testLibraries.cucumberCore
@@ -9,6 +10,7 @@ dependencies {
   implementation testLibraries.cucumberPicocontainer
   implementation libraries.jacksonDatabind
   implementation libraries.jacksonDatatypeJsr310
+  runtimeOnly libraries.jacksonModuleParameterNames
   implementation testLibraries.junitJupiterApi
   implementation testLibraries.junitJupiterEngine
   implementation libraries.resilience4jRetry

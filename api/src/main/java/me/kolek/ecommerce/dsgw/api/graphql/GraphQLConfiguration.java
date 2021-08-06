@@ -9,8 +9,6 @@ import graphql.schema.CoercingSerializeException;
 import graphql.schema.GraphQLScalarType;
 import java.time.OffsetDateTime;
 import java.time.temporal.TemporalAccessor;
-import me.kolek.ecommerce.dsgw.api.model.CatalogItemDTO;
-import me.kolek.ecommerce.dsgw.api.model.CatalogItemOptionDTO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -52,9 +50,7 @@ public class GraphQLConfiguration {
 
   @Bean
   public SchemaParserDictionary schemaParserDictionary() {
-    return new SchemaParserDictionary()
-        .add("CatalogItem", CatalogItemDTO.class)
-        .add("CatalogItemOption", CatalogItemOptionDTO.class);
+    return new SchemaParserDictionary();
   }
 
   @Bean

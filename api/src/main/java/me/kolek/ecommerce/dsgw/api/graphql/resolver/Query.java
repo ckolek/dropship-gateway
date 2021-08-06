@@ -14,6 +14,7 @@ import me.kolek.ecommerce.dsgw.api.model.CatalogEntryDTO;
 import me.kolek.ecommerce.dsgw.api.model.InventoryConnection;
 import me.kolek.ecommerce.dsgw.api.model.InvoiceDTO;
 import me.kolek.ecommerce.dsgw.api.model.OrderConnection;
+import me.kolek.ecommerce.dsgw.api.model.OrderCriteriaDTO;
 import me.kolek.ecommerce.dsgw.api.model.OrderDTO;
 import me.kolek.ecommerce.dsgw.api.model.PackageDTO;
 import me.kolek.ecommerce.dsgw.api.model.ServiceLevelDTO;
@@ -78,9 +79,8 @@ public class Query implements GraphQLQueryResolver {
     }
   }
 
-  public OrderConnection orders(String customerOrderNumber, String supplierId, String warehouseId,
-      Set<OrderDTO.Status> statuses, int pageSize, int pageOffset) {
-    return null;
+  public OrderConnection searchOrders(OrderCriteriaDTO criteria, int pageNumber, int pageSize) {
+    return orderService.searchOrders(criteria, pageNumber, pageSize);
   }
 
   public PackageDTO shipment(String id) {

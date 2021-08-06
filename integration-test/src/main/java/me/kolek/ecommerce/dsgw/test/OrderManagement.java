@@ -5,21 +5,16 @@ import static org.assertj.core.api.Assertions.fail;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.github.resilience4j.retry.Retry;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import me.kolek.ecommerce.dsgw.api.model.AddressDTO;
-import me.kolek.ecommerce.dsgw.api.model.ContactDTO;
+import me.kolek.ecommerce.dsgw.api.model.OrderConnection;
 import me.kolek.ecommerce.dsgw.api.model.OrderDTO;
+import me.kolek.ecommerce.dsgw.api.model.OrderEdge;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.Status;
-import me.kolek.ecommerce.dsgw.api.model.action.order.acknowledge.AcknowledgeOrderRequest;
 import me.kolek.ecommerce.dsgw.api.model.action.order.cancel.CancelOrderRequest;
-import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderItem;
-import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRecipient;
-import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRequest;
 import me.kolek.ecommerce.dsgw.test.api.GraphQLInvoker;
 
 @RequiredArgsConstructor
@@ -27,50 +22,24 @@ public class OrderManagement {
 
   private final GraphQLInvoker graphQLInvoker;
 
+  private OffsetDateTime requestTime;
   private OrderActionResult orderActionResult;
+  private OrderDTO order;
 
   @When("A valid order is submitted")
   public void submitOrder() throws Exception {
-    String customerOrderNumber = Long.toString(System.currentTimeMillis() % 1000000);
+    var request = SubmitOrder.validRequest();
 
-    var request = SubmitOrderRequest.builder()
-        .orderNumber(customerOrderNumber + "-1")
-        .customerOrderNumber(customerOrderNumber)
-        .warehouseCode("CWK1")
-        .recipient(SubmitOrderRecipient.builder()
-            .contact(ContactDTO.builder()
-                .name("Chris Kolek")
-                .email("ckolek@gmail.com")
-                .phone("978-846-4525")
-                .build())
-            .address(AddressDTO.builder()
-                .line1("100 Heard Street")
-                .line2("Unit 314")
-                .city("Chelsea")
-                .state("MA")
-                .postalCode("02150")
-                .country("USA")
-                .build())
-            .build())
-        .item(SubmitOrderItem.builder()
-            .sku("CK-1001")
-            .quantity(10)
-            .build())
-        .carrierName("FedEx")
-        .carrierMode("Home Delivery")
-        .timeOrdered(OffsetDateTime.now().minusHours(6))
-        .timeReleased(OffsetDateTime.now())
-        .build();
-
+    requestTime = OffsetDateTime.now();
     orderActionResult = graphQLInvoker
         .invoke("SubmitOrder", Map.of("request", request), OrderActionResult.class);
   }
 
   @When("A request to acknowledge the order is submitted")
   public void acknowledgeOrder() throws Exception {
-    var request = AcknowledgeOrderRequest.builder()
-        .build();
+    var request = AcknowledgeOrder.acceptAllLines(order);
 
+    requestTime = OffsetDateTime.now();
     orderActionResult = graphQLInvoker.invoke("AcknowledgeOrder",
         Map.of("orderId", orderActionResult.getOrderId(), "request", request),
         OrderActionResult.class);
@@ -83,7 +52,18 @@ public class OrderManagement {
         .cancelReason("some reason")
         .build();
 
+    requestTime = OffsetDateTime.now();
     orderActionResult = graphQLInvoker.invoke("CancelOrder",
+        Map.of("orderId", orderActionResult.getOrderId(), "request", request),
+        OrderActionResult.class);
+  }
+
+  @When("A request to ship the entire order is submitted")
+  public void shipEntireOrder() throws Exception {
+    var request = ShipOrder.shipEntireOrder(order);
+
+    requestTime = OffsetDateTime.now();
+    orderActionResult = graphQLInvoker.invoke("AddOrderShipment",
         Map.of("orderId", orderActionResult.getOrderId(), "request", request),
         OrderActionResult.class);
   }
@@ -101,12 +81,61 @@ public class OrderManagement {
 
   @Then("The order exists with status {orderStatus}")
   public void checkOrderWithStatus(OrderDTO.Status orderStatus) throws Exception {
-    Resilience.retry(() -> tryCheckOrderWithStatus(orderActionResult.getOrderId(), orderStatus));
+    order = Resilience
+        .retry(() -> tryCheckOrderWithStatus(orderActionResult.getOrderId(), orderStatus));
   }
 
-  private void tryCheckOrderWithStatus(String id, OrderDTO.Status orderStatus) throws Exception {
+  @Then("The order is new")
+  public void checkOrderIsNew() throws Exception {
+    checkOrderWithStatus(OrderDTO.Status.NEW);
+
+    assertThat(order.getTimeCreated()).describedAs("time created")
+        .isBetween(requestTime, OffsetDateTime.now());
+  }
+
+  @Then("The order is acknowledged")
+  public void checkOrderIsAcknowledged() throws Exception {
+    checkOrderWithStatus(OrderDTO.Status.ACKNOWLEDGED);
+
+    assertThat(order.getTimeAcknowledged()).describedAs("time acknowledged")
+        .isBetween(requestTime, OffsetDateTime.now());
+  }
+
+  @Then("The order is cancelled")
+  public void checkOrderIsCancelled() throws Exception {
+    checkOrderWithStatus(OrderDTO.Status.CANCELLED);
+
+    assertThat(order.getTimeCancelled()).describedAs("time cancelled")
+        .isBetween(requestTime, OffsetDateTime.now());
+    assertThat(order.getCancelCode()).describedAs("cancel code").isNotNull();
+    assertThat(order.getCancelReason()).describedAs("cancel reason").isNotNull();
+  }
+
+  @Then("The order is shipped")
+  public void checkOrderIsShipped() throws Exception {
+    checkOrderWithStatus(OrderDTO.Status.SHIPPED);
+
+    assertThat(order.getPackages()).describedAs("packages").isNotEmpty();
+  }
+
+  private OrderDTO tryCheckOrderWithStatus(String id, OrderDTO.Status orderStatus) throws Exception {
     OrderDTO order = graphQLInvoker.invoke("GetOrder", Map.of("id", id), OrderDTO.class);
     assertThat(order).withFailMessage("order with ID %s not found", id).isNotNull();
     assertThat(order.getStatus()).describedAs("order status").isEqualTo(orderStatus);
+    return order;
+  }
+
+  @Then("The order can be found by ID with the correct status")
+  public void verifySearchOrderById() throws Exception {
+    Resilience.retry(this::tryVerifySearchOrderById);
+  }
+
+  private void tryVerifySearchOrderById() throws Exception {
+    OrderConnection connection = graphQLInvoker.invoke("SearchOrderById",
+        Map.of("id", order.getId()), OrderConnection.class);
+    assertThat(connection).describedAs("order connection").isNotNull();
+    assertThat(connection.getEdges()).describedAs("order edges").singleElement()
+        .extracting(OrderEdge::getNode).describedAs("order node")
+        .hasFieldOrPropertyWithValue("status", order.getStatus());
   }
 }

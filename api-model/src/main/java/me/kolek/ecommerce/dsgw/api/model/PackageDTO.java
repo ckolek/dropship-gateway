@@ -16,6 +16,7 @@ import lombok.ToString;
 public class PackageDTO {
 
   private String id;
+  private String manifestId;
   private OrderDTO order;
   private WarehouseDTO warehouse;
   private ContactDTO senderContact;

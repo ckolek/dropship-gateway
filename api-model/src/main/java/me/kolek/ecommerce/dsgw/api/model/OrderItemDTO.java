@@ -1,6 +1,7 @@
 package me.kolek.ecommerce.dsgw.api.model;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class OrderItemDTO {
   private OrderCancelCodeDTO cancelCode;
   private String cancelReason;
   private OffsetDateTime timeCancelled;
+  private List<PackageItemDTO> packageItems;
   private OffsetDateTime timeCreated;
   private OffsetDateTime timeUpdated;
 }

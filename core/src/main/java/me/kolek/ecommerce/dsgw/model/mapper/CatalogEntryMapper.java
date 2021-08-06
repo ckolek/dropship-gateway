@@ -2,11 +2,10 @@ package me.kolek.ecommerce.dsgw.model.mapper;
 
 import static me.kolek.ecommerce.dsgw.model.mapper.MapperUtil.mapIfSelected;
 
+import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.CatalogEntryDTO;
-import me.kolek.ecommerce.dsgw.api.model.CatalogItemDTO;
-import me.kolek.ecommerce.dsgw.api.model.CatalogItemOptionDTO;
 import me.kolek.ecommerce.dsgw.model.CatalogItem;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Builder;
@@ -15,7 +14,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(uses = {UuidMapper.class, CatalogMapper.class}, builder = @Builder(disableBuilder = true))
+@Mapper(uses = {CatalogMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class CatalogEntryMapper {
 
   public static final String FIELD__CATALOG = "catalog";
@@ -25,49 +24,29 @@ public abstract class CatalogEntryMapper {
   @Inject
   private CatalogMapper catalogMapper;
 
-  CatalogEntryDTO catalogItemToEntryDto(CatalogItem catalogItem,
-      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection) {
-    if (catalogItem.getParentItem() == null) {
-      return catalogItemToDto(catalogItem, context, selection);
-    } else {
-      var catalogItemOptionDTO = catalogItemToOptionDto(catalogItem, context, selection);
-      catalogItemOptionDTO
-          .setItem(catalogItemToDto(catalogItem.getParentItem(), context, selection));
-      return catalogItemOptionDTO;
-    }
-  }
-
   @Mapping(target = FIELD__CATALOG, ignore = true)
-  @Mapping(target = FIELD__OPTIONS, ignore = true)
-  protected abstract CatalogItemDTO catalogItemToDto(CatalogItem catalogItem,
-      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
-
-  @AfterMapping
-  protected void afterMapping(CatalogItem catalogItem, @MappingTarget CatalogItemDTO catalogItemDTO,
-      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection) {
-    mapIfSelected(selection, FIELD__CATALOG, subSelection -> catalogItemDTO
-        .setCatalog(catalogMapper.catalogToDto(catalogItem.getCatalog(), context, subSelection)));
-    mapIfSelected(selection, FIELD__OPTIONS, subSelection -> catalogItemDTO.setOptions(
-        catalogItemListToOptionDTO(catalogItem.getChildItems(), context, subSelection)));
-
-    if (context.isSetParentReferences() && catalogItemDTO.getOptions() != null) {
-      catalogItemDTO.getOptions().forEach(option -> option.setItem(catalogItemDTO));
-    }
-  }
-
-  protected abstract List<CatalogItemOptionDTO> catalogItemListToOptionDTO(
-      List<CatalogItem> catalogItems, @Context CycleAvoidingMappingContext context,
-      @Context MappingFieldSelection selection);
-
   @Mapping(target = FIELD__ITEM, ignore = true)
-  protected abstract CatalogItemOptionDTO catalogItemToOptionDto(CatalogItem catalogItem,
+  @Mapping(target = FIELD__OPTIONS, ignore = true)
+  protected abstract CatalogEntryDTO catalogItemToDto(CatalogItem catalogItem,
       @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
 
   @AfterMapping
   protected void afterMapping(CatalogItem catalogItem,
-      @MappingTarget CatalogItemOptionDTO catalogItemOptionDTO,
-      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection) {
-    mapIfSelected(selection, FIELD__ITEM, subSelection -> catalogItemOptionDTO
-        .setItem(catalogItemToDto(catalogItem.getParentItem(), context, subSelection)));
+      @MappingTarget CatalogEntryDTO catalogEntryDTO, @Context CycleAvoidingMappingContext context,
+      @Context MappingFieldSelection selection) {
+    mapIfSelected(selection, FIELD__CATALOG, subSelection -> catalogEntryDTO.setCatalog(
+        catalogMapper.catalogToDto(catalogItem.getCatalog(), context, subSelection)));
+    mapIfSelected(selection, FIELD__ITEM, subSelection -> catalogEntryDTO.setItem(
+        catalogItemToDto(catalogItem.getParentItem(), context, subSelection)));
+    mapIfSelected(selection, FIELD__OPTIONS, subSelection -> catalogEntryDTO.setOptions(
+        catalogItemsToDtoList(catalogItem.getChildItems(), context, subSelection)));
+
+    if (context.isSetParentReferences() && catalogEntryDTO.getOptions() != null) {
+      catalogEntryDTO.getOptions().forEach(option -> option.setItem(catalogEntryDTO));
+    }
   }
+
+  protected abstract List<CatalogEntryDTO> catalogItemsToDtoList(
+      Collection<CatalogItem> catalogItems, @Context CycleAvoidingMappingContext context,
+      @Context MappingFieldSelection selection);
 }

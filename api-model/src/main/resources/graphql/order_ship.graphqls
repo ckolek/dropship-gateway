@@ -1,0 +1,26 @@
+extend type Mutation {
+    addOrderShipment(orderId: ID!, request: OrderShipmentRequest!, async: Boolean) : OrderActionResult!
+}
+
+input OrderShipmentRequest {
+    manifestId: String
+    warehouseCode: String!
+    sender: OrderShipmentCorrespondent!
+    recipient: OrderShipmentCorrespondent!
+    carrierName: String
+    carrierMode: String
+    carrierServiceLevelCode: String
+    trackingNumber: String!
+    items: [OrderShipmentItem!]!
+    timeShipped: DateTime!
+}
+
+input OrderShipmentItem {
+    orderLineNumber: Int!
+    quantity: Int!
+}
+
+input OrderShipmentCorrespondent {
+    contact: ContactInput!
+    address: AddressInput!
+}

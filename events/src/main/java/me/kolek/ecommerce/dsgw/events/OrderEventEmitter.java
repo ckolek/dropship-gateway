@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO;
 import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Metadata;
 import me.kolek.ecommerce.dsgw.context.RequestContext;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor(onConstructor__ = @Inject)
+@Slf4j
 public class OrderEventEmitter {
 
   private final OrderMapper orderMapper;
@@ -75,7 +77,10 @@ public class OrderEventEmitter {
 
     String message = objectMapper.writeValueAsString(event);
 
+    log.debug("emitting order event: {}", message);
+
     Map<String, String> messageAttributes = new HashMap<>();
+    messageAttributes.put(MessageAttributes.ORDER_ID, event.getOrder().getId());
     messageAttributes.put(MessageAttributes.EVENT_TYPE, type.toString());
     if (subType != null) {
         messageAttributes.put(MessageAttributes.EVENT_SUB_TYPE, subType.toString());

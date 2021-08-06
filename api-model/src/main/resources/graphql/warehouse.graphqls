@@ -44,3 +44,15 @@ type WarehouseEdge implements Edge {
     cursor: ID!
     node: Warehouse!
 }
+
+input WarehouseCriteria {
+    id: ID
+    suppliers: [SupplierCriteria]
+    code: String
+    supplierCode: String
+    description: String
+    statuses: [WarehouseStatus]
+    address: AddressCriteria
+    timeCreated: DateTimeCriteria
+    timeUpdated: DateTimeCriteria
+}

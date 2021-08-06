@@ -31,19 +31,31 @@ subprojects {
 
   version = rootProject.version
 
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(16)
+    }
+  }
 
   compileJava {
     options.compilerArgs << '-parameters'
   }
 
   dependencies {
+    testImplementation "junit:junit"
+  }
+
+  test {
+    useJUnitPlatform()
+  }
+}
+
+configure(subprojects.findAll { !(it.name in ['api-model', 'order-event-handler']) }) {
+  dependencies {
     implementation enforcedPlatform(SpringBootPlugin.BOM_COORDINATES)
+
     implementation libraries.guava
     implementation libraries.javaxInject
-
-    testImplementation "junit:junit"
   }
 }
 

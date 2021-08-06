@@ -1,13 +1,10 @@
 extend type Query {
     order(id: ID, orderNumber: String) : Order
 
-    orders(
-        customerOrderNumber: String,
-        supplierId: String,
-        warehouseId: String,
-        statuses: [OrderStatus!],
-        pageSize: Int,
-        pageOffset: Int) : OrderConnection
+    searchOrders(
+        criteria: OrderCriteria!
+        pageNumber: Int!,
+        pageSize: Int!) : OrderConnection!
 }
 
 type Order {
@@ -18,13 +15,14 @@ type Order {
     recipient: Recipient!
     items: [OrderItem!]!
     serviceLevel: ServiceLevel
-    packages: [Package!]!
-    invoices: [Invoice!]!
+    packages: [Package!]
+    invoices: [Invoice!]
     status: OrderStatus
     cancelCode: OrderCancelCode
     cancelReason: String
     timeOrdered: DateTime!
     timeReleased: DateTime!
+    timeAcknowledged: DateTime
     timeCancelled: DateTime
     timeCreated: DateTime!
     timeUpdated: DateTime!
@@ -69,6 +67,7 @@ type OrderItem {
     cancelCode: OrderCancelCode
     cancelReason: String
     timeCancelled: DateTime!
+    packageItems: [PackageItem!]
     timeCreated: DateTime!
     timeUpdated: DateTime!
 }
@@ -84,4 +83,58 @@ type OrderCancelCode {
 type Recipient {
     contact: Contact!
     address: Address!
+}
+
+input OrderCriteria {
+    id: ID
+    orderNumber: String
+    customerOrderNumber: String
+    warehouses: [WarehouseCriteria]
+    recipients: [RecipientCriteria]
+    items: [OrderItemCriteria]
+    serviceLevels: [ServiceLevelCriteria]
+    statuses: [OrderStatus]
+    cancelCodes: [OrderCancelCodeCriteria]
+    cancelReason: String
+    timeOrdered: DateTimeCriteria
+    timeReleased: DateTimeCriteria
+    timeAcknowledged: DateTimeCriteria
+    timeCancelled: DateTimeCriteria
+    timeCreated: DateTimeCriteria
+    timeUpdated: DateTimeCriteria
+}
+
+input OrderItemCriteria {
+    id: ID
+    lineNumber: IntCriteria
+    catalogEntries: [CatalogEntryCriteria]
+    quantity: IntCriteria
+    customization: String
+    expectedShipDate: DateTimeCriteria
+    expectedDeliveryDate: DateTimeCriteria
+    statuses: [OrderStatus]
+    quantityAccepted: IntCriteria
+    quantityRejected: IntCriteria
+    rejectCodes: [OrderCancelCodeCriteria]
+    rejectReason: String
+    timeAcknowledged: DateTimeCriteria
+    quantityCancelled: IntCriteria
+    cancelCodes: [OrderCancelCodeCriteria]
+    cancelReason: String
+    timeCancelled: DateTimeCriteria
+    timeCreated: DateTimeCriteria
+    timeUpdated: DateTimeCriteria
+}
+
+input OrderCancelCodeCriteria {
+    id: ID
+    code: String
+    description: String
+    timeCreated: DateTimeCriteria
+    timeUpdated: DateTimeCriteria
+}
+
+input RecipientCriteria {
+    contact: ContactCriteria
+    address: AddressCriteria
 }

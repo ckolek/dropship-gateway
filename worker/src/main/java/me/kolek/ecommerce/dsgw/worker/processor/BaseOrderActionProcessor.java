@@ -18,8 +18,12 @@ public abstract class BaseOrderActionProcessor<A extends OrderAction<?>> impleme
 
   protected final OrderRepository orderRepository;
 
-  @Inject
   protected TransactionTemplate transactionTemplate;
+
+  @Inject
+  public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+    this.transactionTemplate = transactionTemplate;
+  }
 
   @Override
   public OrderActionResult process(A action) {
@@ -34,13 +38,14 @@ public abstract class BaseOrderActionProcessor<A extends OrderAction<?>> impleme
 
       var result = resultBuilder.build();
       switch (result.getStatus()) {
-        case SUCCESSFUL:
-          order = processSuccessful(action, order);
-          break;
-        case FAILED:
-          order = processFailed(action, order);
+        case SUCCESSFUL -> {
+          order = orderRepository.saveAndFlush(order);
+          processSuccessful(action, order);
+        }
+        case FAILED -> {
           status.setRollbackOnly();
-          break;
+          processFailed(action, order);
+        }
       }
 
       Optional.ofNullable(order).map(Order::getId).map(Object::toString)
@@ -53,12 +58,10 @@ public abstract class BaseOrderActionProcessor<A extends OrderAction<?>> impleme
   protected abstract void process(A action, Order order,
       OrderActionResult.OrderActionResultBuilder result);
 
-  protected Order processSuccessful(A action, Order order) {
-    return order;
+  protected void processSuccessful(A action, Order order) {
   }
 
-  protected Order processFailed(A action, Order order) {
-    return order;
+  protected void processFailed(A action, Order order) {
   }
 
   protected Order findOrder(A action, OrderActionResult.OrderActionResultBuilder result) {

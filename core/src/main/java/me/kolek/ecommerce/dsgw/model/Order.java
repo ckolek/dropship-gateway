@@ -115,6 +115,14 @@ public class Order {
     items.add(item);
   }
 
+  public void addPackage(Package _package) {
+    if (packages == null) {
+      packages = new ArrayList<>();
+    }
+    _package.setOrder(this);
+    packages.add(_package);
+  }
+
   public enum Status {
     NEW,
     ACKNOWLEDGED,

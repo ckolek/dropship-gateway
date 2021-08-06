@@ -2,8 +2,11 @@ package me.kolek.ecommerce.dsgw.model.mapper;
 
 import static me.kolek.ecommerce.dsgw.model.mapper.MapperUtil.mapIfSelected;
 
+import java.util.Collection;
+import java.util.List;
 import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.PackageItemDTO;
+import me.kolek.ecommerce.dsgw.api.model.action.order.ship.OrderShipmentItem;
 import me.kolek.ecommerce.dsgw.model.PackageItem;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Builder;
@@ -30,6 +33,9 @@ public abstract class PackageItemMapper {
   public abstract PackageItemDTO packageItemToDto(PackageItem packageItem,
       @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
 
+  protected abstract List<PackageItemDTO> packageItemToDtoList(Collection<PackageItem> items,
+      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
+
   @AfterMapping
   protected void afterMapping(PackageItem packageItem, @MappingTarget PackageItemDTO packageItemDTO,
       @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection) {
@@ -38,4 +44,6 @@ public abstract class PackageItemMapper {
     mapIfSelected(selection, FIELD__ORDER_ITEM, subSelection -> packageItemDTO.setOrderItem(
         orderItemMapper.orderItemToDto(packageItem.getOrderItem(), context, subSelection)));
   }
+
+  public abstract PackageItem orderShipmentItemToPackageItem(OrderShipmentItem item);
 }

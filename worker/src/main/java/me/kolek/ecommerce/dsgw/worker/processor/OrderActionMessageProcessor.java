@@ -91,10 +91,13 @@ public class OrderActionMessageProcessor extends ObjectMappingMessageProcessor<O
 
     Map<String, String> messageAttributes = Map.of(MessageAttributes.REQUEST_ID, requestId);
 
-    sqs.sendMessage(new SendMessageRequest()
+    var sendMessageResponse = sqs.sendMessage(new SendMessageRequest()
         .withQueueUrl(responseQueueUrl.get())
         .withMessageBody(body)
         .withMessageAttributes(toMessageAttributeValueMap(messageAttributes))
         .withDelaySeconds(0));
+
+    log.debug("sent order action result message: message_id={}",
+        sendMessageResponse.getMessageId());
   }
 }

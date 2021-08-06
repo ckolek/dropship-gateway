@@ -20,9 +20,11 @@ aws:
           poll-interval: 1s
           max-number-of-messages: 10
           wait-time-seconds: 5s
-          attribute-names:
+          message-attribute-names:
             - RequestID
             - ResponseQueueURL
+          worker-pool:
+            thread-count: 1
 dsgw:
   events:
     order-event-topic-arn: arn:aws:sns:us-east-1:000000000000:order-events

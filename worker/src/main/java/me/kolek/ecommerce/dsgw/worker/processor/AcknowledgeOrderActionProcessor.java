@@ -17,7 +17,7 @@ import me.kolek.ecommerce.dsgw.model.Order;
 import me.kolek.ecommerce.dsgw.model.Order.Status;
 import me.kolek.ecommerce.dsgw.model.OrderCancelCode;
 import me.kolek.ecommerce.dsgw.model.OrderItem;
-import me.kolek.ecommerce.dsgw.repository.OrderCancelCodeRepository;
+import me.kolek.ecommerce.dsgw.registry.OrderCancelCodeRegistry;
 import me.kolek.ecommerce.dsgw.repository.OrderRepository;
 import me.kolek.ecommerce.dsgw.util.OrderUtil;
 import org.springframework.data.util.Pair;
@@ -27,14 +27,14 @@ import org.springframework.stereotype.Component;
 public class AcknowledgeOrderActionProcessor extends
     BaseOrderActionProcessor<AcknowledgeOrderAction> {
 
-  private final OrderCancelCodeRepository orderCancelCodeRepository;
+  private final OrderCancelCodeRegistry orderCancelCodeRegistry;
   private final OrderEventEmitter eventEmitter;
 
   @Inject
   public AcknowledgeOrderActionProcessor(OrderRepository orderRepository,
-      OrderCancelCodeRepository orderCancelCodeRepository, OrderEventEmitter eventEmitter) {
+      OrderCancelCodeRegistry orderCancelCodeRegistry, OrderEventEmitter eventEmitter) {
     super(orderRepository);
-    this.orderCancelCodeRepository = orderCancelCodeRepository;
+    this.orderCancelCodeRegistry = orderCancelCodeRegistry;
     this.eventEmitter = eventEmitter;
   }
 
@@ -65,10 +65,8 @@ public class AcknowledgeOrderActionProcessor extends
 
   @Override
   @SneakyThrows
-  protected Order processSuccessful(AcknowledgeOrderAction action, Order order) {
+  protected void processSuccessful(AcknowledgeOrderAction action, Order order) {
     eventEmitter.emitEvent(order, Type.ORDER_ACKNOWLEDGED);
-
-    return order;
   }
 
   private void acknowledgeOrder(Order order, OffsetDateTime timeAcknowledged) {
@@ -125,6 +123,9 @@ public class AcknowledgeOrderActionProcessor extends
     } else if (acknowledgeOrderItem.getQuantityRejected() != null) {
       quantityRejected = acknowledgeOrderItem.getQuantityRejected();
       quantityAccepted = orderItem.getQuantity() - quantityRejected;
+    } else if (acknowledgeOrderItem.getRejectCode() != null) {
+      quantityAccepted = 0;
+      quantityRejected = orderItem.getQuantity();
     } else {
       quantityAccepted = orderItem.getQuantity();
       quantityRejected = 0;
@@ -151,7 +152,8 @@ public class AcknowledgeOrderActionProcessor extends
       fail(result, "reject code is required for order item with rejected quantity");
       return Optional.empty();
     }
-    OrderCancelCode orderCancelCode = orderCancelCodeRepository.findByCode(rejectCode).orElse(null);
+    OrderCancelCode orderCancelCode = orderCancelCodeRegistry.findOrderCancelCodeByCode(rejectCode)
+        .orElse(null);
     if (orderCancelCode == null) {
       fail(result, "reject code " + rejectCode + " not found");
       return Optional.empty();

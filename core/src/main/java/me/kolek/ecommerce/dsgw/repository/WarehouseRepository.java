@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface WarehouseRepository extends ExtendedJpaRepository<Warehouse, Long> {
 
   Optional<Warehouse> findWarehouseByCode(String code);
+
+  Optional<Warehouse> findWarehouseBySupplierCode(String code);
 }

@@ -9,5 +9,6 @@ RUN wget -q -O /usr/local/bin/waitforit https://github.com/maxcnunes/waitforit/r
     && chmod +x /usr/local/bin/waitforit
 
 ADD main.sh /aws
+VOLUME /aws/lambda
 
 ENTRYPOINT ["bash", "main.sh"]

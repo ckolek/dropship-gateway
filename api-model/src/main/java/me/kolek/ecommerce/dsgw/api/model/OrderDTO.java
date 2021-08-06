@@ -34,6 +34,7 @@ public class OrderDTO {
   private String cancelReason;
   private OffsetDateTime timeOrdered;
   private OffsetDateTime timeReleased;
+  private OffsetDateTime timeAcknowledged;
   private OffsetDateTime timeCancelled;
   private OffsetDateTime timeCreated;
   private OffsetDateTime timeUpdated;

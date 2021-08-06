@@ -145,7 +145,7 @@ public class QueuePoller {
           .withQueueUrl(getQueueUrl())
           .withEntries(messages.stream()
               .map(this::createChangeMessageVisibilityBatchRequest)
-              .collect(Collectors.toList()));
+              .toList());
     }
 
     private ChangeMessageVisibilityBatchRequestEntry createChangeMessageVisibilityBatchRequest(

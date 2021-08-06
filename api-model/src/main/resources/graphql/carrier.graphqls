@@ -45,3 +45,19 @@ type ServiceLevelEdge implements Edge {
     cursor: ID!
     node: ServiceLevel!
 }
+
+input CarrierCriteria {
+    id: ID
+    name: String
+    timeCreated: DateTimeCriteria
+    timeUpdated: DateTimeCriteria
+}
+
+input ServiceLevelCriteria {
+    id: ID
+    carriers: [CarrierCriteria]
+    mode: String
+    code: String
+    timeCreated: DateTimeCriteria
+    timeUpdated: DateTimeCriteria
+}

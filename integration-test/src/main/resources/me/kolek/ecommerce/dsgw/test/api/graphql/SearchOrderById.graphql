@@ -1,0 +1,44 @@
+query SearchOrderById($id: ID) {
+    searchOrders(criteria: {
+        id: $id
+    }, pageNumber: 0, pageSize: 1) {
+        edges {
+            node {
+                id,
+                status
+                warehouse {
+                    code
+                    supplierCode
+                    address {
+                        line1, line2, line3, city, state, province, postalCode, country
+                    }
+                }
+                items {
+                    lineNumber
+                    quantity
+                }
+                recipient {
+                    contact {
+                        name, email, phone
+                    }
+                    address {
+                        line1, line2, line3, city, state, province, postalCode, country
+                    }
+                }
+                serviceLevel {
+                    code
+                }
+                cancelCode {
+                    code
+                }
+                cancelReason
+                packages {
+                    timeShipped
+                }
+                timeCreated
+                timeAcknowledged
+                timeCancelled
+            }
+        }
+    }
+}

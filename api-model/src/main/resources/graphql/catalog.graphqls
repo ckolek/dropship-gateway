@@ -50,8 +50,9 @@ type CatalogEdge implements Edge {
     node: Catalog!
 }
 
-interface CatalogEntry {
+type CatalogEntry {
     id: ID!
+    catalog: Catalog!
     sku: String!
     gtin: String
     upc: String
@@ -60,6 +61,8 @@ interface CatalogEntry {
     mpn: String
     manufacturer: String
     brand: String
+    item: CatalogEntry
+    options: [CatalogEntry!]
     timeCreated: DateTime!
     timeUpdated: DateTime!
 }
@@ -74,26 +77,17 @@ type CatalogEntryEdge implements Edge {
     node: CatalogEntry!
 }
 
-type CatalogItem implements CatalogEntry {
-    id: ID!
-    catalog: Catalog!
-    sku: String!
-    gtin: String
-    upc: String
-    ean: String
-    isbn: String
-    mpn: String
-    manufacturer: String
-    brand: String
-    options: [CatalogItemOption!]
-    timeCreated: DateTime!
-    timeUpdated: DateTime!
+input CatalogCriteria {
+    id: ID
+    suppliers: [SupplierCriteria]
+    timeCreated: DateTimeCriteria
+    timeUpdated: DateTimeCriteria
 }
 
-type CatalogItemOption implements CatalogEntry {
-    id: ID!
-    item: CatalogItem!
-    sku: String!
+input CatalogEntryCriteria {
+    id: ID
+    catalogs: [CatalogCriteria]
+    sku: String
     gtin: String
     upc: String
     ean: String
@@ -101,6 +95,7 @@ type CatalogItemOption implements CatalogEntry {
     mpn: String
     manufacturer: String
     brand: String
-    timeCreated: DateTime!
-    timeUpdated: DateTime!
+    item: Boolean
+    timeCreated: DateTimeCriteria
+    timeUpdated: DateTimeCriteria
 }

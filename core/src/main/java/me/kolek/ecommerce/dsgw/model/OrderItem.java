@@ -1,6 +1,8 @@
 package me.kolek.ecommerce.dsgw.model;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,11 +12,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -86,6 +91,11 @@ public class OrderItem {
   @Column(name = "time_cancelled")
   private OffsetDateTime timeCancelled;
 
+  @OneToMany(mappedBy = "orderItem")
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  private Set<PackageItem> packageItems;
+
   @CreationTimestamp
   @Column(name = "time_created", nullable = false)
   private OffsetDateTime timeCreated;
@@ -97,4 +107,12 @@ public class OrderItem {
   @Version
   @Column(name = "record_version", nullable = false)
   private Short recordVersion;
+
+  public void addPackageItem(PackageItem packageItem) {
+    if (packageItems == null) {
+      packageItems = new HashSet<>();
+    }
+    packageItem.setOrderItem(this);
+    packageItems.add(packageItem);
+  }
 }

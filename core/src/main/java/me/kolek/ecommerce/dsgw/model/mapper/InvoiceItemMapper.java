@@ -2,6 +2,7 @@ package me.kolek.ecommerce.dsgw.model.mapper;
 
 import static me.kolek.ecommerce.dsgw.model.mapper.MapperUtil.mapIfSelected;
 
+import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 import me.kolek.ecommerce.dsgw.api.model.InvoiceItemDTO;
@@ -30,6 +31,9 @@ public abstract class InvoiceItemMapper {
   @Mapping(target = FIELD__INVOICE, ignore = true)
   @Mapping(target = FIELD__ORDER_ITEM, ignore = true)
   public abstract InvoiceItemDTO invoiceItemToDto(InvoiceItem invoiceItem,
+      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
+
+  protected abstract List<InvoiceItemDTO> invoiceItemsToDtoList(Collection<InvoiceItem> items,
       @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
 
   @AfterMapping

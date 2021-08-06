@@ -9,3 +9,4 @@ Feature: Submit Order
     Then A successful order action response is returned
     And The order exists with status NEW
     And An order event of type ORDER_CREATED is emitted
+    And The order can be found by ID with the correct status

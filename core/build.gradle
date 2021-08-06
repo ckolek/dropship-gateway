@@ -6,6 +6,7 @@ dependencies {
   implementation libraries.caffeine
   implementation libraries.mapstruct
   api libraries.springBootStarterDataJpa
+  api libraries.springBootStarterDataElasticsearch
 
   annotationProcessor libraries.mapstructProcessor
 }

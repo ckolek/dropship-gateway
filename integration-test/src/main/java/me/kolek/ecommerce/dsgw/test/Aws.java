@@ -13,7 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Aws {
 
   private static final String AWS_ENDPOINT = Optional.ofNullable(System.getenv("AWS_ENDPOINT"))
@@ -50,9 +52,14 @@ public class Aws {
       Consumer<Message> messageConsumer) {
     String queueUrl = getQueueUrl(queueName);
 
+    log.info("receiving messages from queue: {}", queueUrl);
+
     List<Message> messages;
     do {
       messages = receiveMessages(queueUrl, waitTime);
+
+      log.info("received {} messages", messages.size());
+
       messages.forEach(messageConsumer);
       deleteMessages(queueUrl, messages);
     } while (!messages.isEmpty());

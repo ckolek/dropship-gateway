@@ -20,7 +20,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(uses = {UuidMapper.class, WarehouseMapper.class, ContactMapper.class, AddressMapper.class,
+@Mapper(uses = {WarehouseMapper.class, ContactMapper.class, AddressMapper.class,
     OrderItemMapper.class, ServiceLevelMapper.class, OrderCancelCodeMapper.class,
     PackageMapper.class, InvoiceMapper.class}, builder = @Builder(disableBuilder = true))
 public abstract class OrderMapper {
@@ -36,6 +36,19 @@ public abstract class OrderMapper {
 
   @Inject
   private ServiceLevelMapper serviceLevelMapper;
+
+  @Inject
+  private OrderItemMapper orderItemMapper;
+
+  @Inject
+  private PackageMapper packageMapper;
+
+  @Inject
+  private InvoiceMapper invoiceMapper;
+
+  public OrderDTO orderToDto(Order order) {
+    return orderToDto(order, MappingFieldSelection.ALL);
+  }
 
   public OrderDTO orderToDto(Order order, @Context MappingFieldSelection selection) {
     return orderToDto(order, new CycleAvoidingMappingContext(), selection);
@@ -63,13 +76,13 @@ public abstract class OrderMapper {
     mapIfSelected(selection, FIELD__WAREHOUSE, subSelection -> orderDTO
         .setWarehouse(warehouseMapper.warehouseToDto(order.getWarehouse(), context, subSelection)));
     mapIfSelected(selection, FIELD__ITEMS, subSelection -> orderDTO
-        .setItems(orderItemListToDtoList(order.getItems(), context, subSelection)));
+        .setItems(orderItemMapper.orderItemsToDtoList(order.getItems(), context, subSelection)));
     mapIfSelected(selection, FIELD__SERVICE_LEVEL, subSelection -> orderDTO.setServiceLevel(
         serviceLevelMapper.serviceLevelToDto(order.getServiceLevel(), context, subSelection)));
     mapIfSelected(selection, FIELD__PACKAGES, subSelection -> orderDTO
-        .setPackages(packageListToDtoList(order.getPackages(), context, subSelection)));
+        .setPackages(packageMapper.packagesToDtoList(order.getPackages(), context, subSelection)));
     mapIfSelected(selection, FIELD__INVOICES, subSelection -> orderDTO
-        .setInvoices(invoiceListToDtoList(order.getInvoices(), context, subSelection)));
+        .setInvoices(invoiceMapper.invoicesToDtoList(order.getInvoices(), context, subSelection)));
 
     if (context.isSetParentReferences() && orderDTO.getItems() != null) {
       orderDTO.getItems().forEach(item -> item.setOrder(orderDTO));
@@ -81,15 +94,6 @@ public abstract class OrderMapper {
       orderDTO.getInvoices().forEach(invoice -> invoice.setOrder(orderDTO));
     }
   }
-
-  protected abstract List<OrderItemDTO> orderItemListToDtoList(List<OrderItem> orderItems,
-      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
-
-  protected abstract List<PackageDTO> packageListToDtoList(List<Package> packages,
-      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
-
-  protected abstract List<InvoiceDTO> invoiceListToDtoList(List<Invoice> invoices,
-      @Context CycleAvoidingMappingContext context, @Context MappingFieldSelection selection);
 
   @Mapping(source = "orderNumber", target = "externalId")
   @Mapping(source = "recipient.contact", target = "contact")

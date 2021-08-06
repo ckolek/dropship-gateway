@@ -29,3 +29,11 @@ type SupplierEdge implements Edge {
     cursor: ID!
     node: Supplier!
 }
+
+input SupplierCriteria {
+    id: ID
+    name: String
+    statuses: [SupplierStatus]
+    timeCreated: DateTimeCriteria
+    timeUpdated: DateTimeCriteria
+}

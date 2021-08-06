@@ -1,14 +1,25 @@
 scalar DateTime
 
+input DateTimeCriteria {
+    after: DateTime
+    before: DateTime
+}
+
 type Contact {
-    name: String,
-    phone: String,
+    name: String
+    phone: String
     email: String
 }
 
 input ContactInput {
-    name: String,
-    phone: String,
+    name: String
+    phone: String
+    email: String
+}
+
+input ContactCriteria {
+    name: String
+    phone: String
     email: String
 }
 
@@ -32,6 +43,27 @@ input AddressInput {
     province: String
     postalCode: String!
     country: String!
+}
+
+input AddressCriteria {
+    line1: String
+    line2: String
+    line3: String
+    city: String
+    state: String
+    province: String
+    postalCode: String
+    country: String
+}
+
+input IntCriteria {
+    min: Int
+    max: Int
+}
+
+input FloatCriteria {
+    min: Float
+    max: Float
 }
 
 type Query {

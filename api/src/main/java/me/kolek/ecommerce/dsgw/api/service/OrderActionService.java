@@ -8,6 +8,7 @@ import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Suppliers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import javax.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,54 +39,49 @@ public class OrderActionService {
   private final Map<String, CompletableFuture<OrderActionResult>> results = new ConcurrentHashMap<>();
   private final ExecutorService resultExecutor = Executors.newCachedThreadPool();
 
-  private String orderActionsQueueUrl;
-  private String orderActionResultsQueueUrl;
-
-  private String getOrderActionsQueueUrl() {
-    if (orderActionsQueueUrl == null) {
-      synchronized (sqs) {
-        if (orderActionsQueueUrl == null) {
-          orderActionsQueueUrl = sqs.getQueueUrl("order-actions").getQueueUrl();
-        }
-      }
-    }
-    return orderActionsQueueUrl;
-  }
-
-  private String getOrderActionResultsQueueUrl() {
-    if (orderActionResultsQueueUrl == null) {
-      synchronized (sqs) {
-        if (orderActionResultsQueueUrl == null) {
-          orderActionResultsQueueUrl = sqs.createQueue("order-action-results").getQueueUrl();
-        }
-      }
-    }
-    return orderActionResultsQueueUrl;
-  }
+  private final Supplier<String> orderActionsQueueUrl = Suppliers
+      .synchronizedSupplier(() -> getQueueUrl("order-actions"));
+  private final Supplier<String> orderActionResultsQueueUrl = Suppliers
+      .synchronizedSupplier(() -> getQueueUrl("order-action-results"));
 
   public OrderActionResult processOrderAction(OrderAction<?> orderAction, boolean async)
       throws Exception {
     String body = objectMapper.writeValueAsString(orderAction);
 
     String requestId = RequestContext.get().getId();
-    String responseQueueUrl = getOrderActionResultsQueueUrl();
+    String responseQueueUrl = orderActionResultsQueueUrl.get();
 
     Map<String, String> attributes = new HashMap<>();
     attributes.put(MessageAttributes.REQUEST_ID, requestId);
+
+    CompletableFuture<OrderActionResult> result = new CompletableFuture<>();
+
     if (!async) {
       attributes.put(MessageAttributes.RESPONSE_QUEUE_URL, responseQueueUrl);
+      results.put(requestId, result);
     }
 
-    sqs.sendMessage(new SendMessageRequest()
-        .withQueueUrl(getOrderActionsQueueUrl())
+    var sendMessageResponse = sqs.sendMessage(new SendMessageRequest()
+        .withQueueUrl(orderActionsQueueUrl.get())
         .withMessageBody(body)
         .withMessageAttributes(toMessageAttributeValueMap(attributes)));
 
+    log.debug("sent order action message: message_id={}", sendMessageResponse.getMessageId());
+
     if (!async) {
-      CompletableFuture<OrderActionResult> result = new CompletableFuture<>();
-      results.put(requestId, result);
-      resultExecutor.submit(() -> receiveResultMessages(responseQueueUrl));
-      return result.get(10, TimeUnit.SECONDS);
+      resultExecutor.submit(() -> {
+        try {
+          receiveResultMessages(responseQueueUrl);
+        } catch (Exception e) {
+          log.error("failed to receive order action result messages", e);
+        }
+      });
+
+      try {
+        return result.get(10, TimeUnit.SECONDS);
+      } finally {
+        results.remove(requestId);
+      }
     } else {
       return OrderActionResult.builder().status(Status.PENDING).build();
     }
@@ -97,7 +94,8 @@ public class OrderActionService {
           .withQueueUrl(queueUrl)
           .withMaxNumberOfMessages(10)
           .withWaitTimeSeconds(10)
-          .withAttributeNames("*")).getMessages();
+          .withMessageAttributeNames("All"))
+          .getMessages();
 
       for (Message message : messages) {
         processOrderActionResultMessage(queueUrl, message);
@@ -108,16 +106,26 @@ public class OrderActionService {
   }
 
   private void processOrderActionResultMessage(String queueUrl, Message message) throws Exception {
-    var result = objectMapper.readValue(message.getBody(), OrderActionResult.class);
     String requestId = getRequiredAttribute(message, MessageAttributes.REQUEST_ID);
 
-    CompletableFuture<OrderActionResult> future = results.remove(requestId);
-    if (future != null) {
-      future.complete(result);
-    } else {
-      log.warn("request has expired and result will be ignored: order_id={}", result.getOrderId());
-    }
+    try (var requestContext = RequestContext.initialize(requestId)) {
+      log.debug("processing order action result message: message_id={}", message.getMessageId());
 
-    sqs.deleteMessage(queueUrl, message.getReceiptHandle());
+      var result = objectMapper.readValue(message.getBody(), OrderActionResult.class);
+
+      CompletableFuture<OrderActionResult> future = results.remove(requestId);
+      if (future != null) {
+        future.complete(result);
+      } else {
+        log.warn("request has expired and result will be ignored: order_id={}",
+            result.getOrderId());
+      }
+
+      sqs.deleteMessage(queueUrl, message.getReceiptHandle());
+    }
+  }
+
+  private String getQueueUrl(String queueName) {
+    return sqs.getQueueUrl(queueName).getQueueUrl();
   }
 }
