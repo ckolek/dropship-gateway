@@ -8,7 +8,19 @@ dependencies {
   api libraries.springBootStarterDataJpa
   api libraries.springBootStarterDataElasticsearch
 
+  testImplementation testLibraries.assertjCore
+  testRuntimeClasspath libraries.flywayCore
+  testImplementation testLibraries.mockitoCore
+  testImplementation testLibraries.mockitoJunitJupiter
+  testRuntimeClasspath libraries.postgresql
+  testImplementation(testLibraries.springBootStarterTest) {
+    exclude group: 'junit', module: 'junit'
+  }
+  testImplementation testLibraries.testcontainersJunitJupiter
+  testImplementation testLibraries.testcontainersPostgresql
+
   annotationProcessor libraries.mapstructProcessor
+  annotationProcessor libraries.springBootConfigurationProcessor
 }
 
 compileJava {

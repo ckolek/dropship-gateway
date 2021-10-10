@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO;
-import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Type;
+import me.kolek.ecommerce.dsgw.api.model.event.OrderEventDTO;
+import me.kolek.ecommerce.dsgw.api.model.event.OrderEventDTO.Type;
 
 @RequiredArgsConstructor
 @Slf4j

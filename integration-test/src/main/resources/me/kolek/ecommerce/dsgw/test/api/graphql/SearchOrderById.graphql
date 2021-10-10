@@ -2,6 +2,9 @@ query SearchOrderById($id: ID) {
     searchOrders(criteria: {
         id: $id
     }, pageNumber: 0, pageSize: 1) {
+        pageInfo {
+            totalCount
+        }
         edges {
             node {
                 id,

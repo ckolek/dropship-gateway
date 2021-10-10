@@ -1,0 +1,45 @@
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(11)
+  }
+}
+
+dependencies {
+  implementation project(':api-model')
+  implementation libraries.apacheCommonsLogging
+  implementation libraries.awsLambdaJavaCore
+  implementation libraries.awsLambdaJavaEvents
+  implementation libraries.elasticsearch
+  implementation libraries.elasticsearchRestHighLevelClient
+  implementation libraries.guava
+  implementation libraries.jacksonDatabind
+  implementation libraries.jacksonDatatypeJsr310
+
+  testImplementation testLibraries.assertjCore
+  testImplementation testLibraries.awsLambdaJavaTests
+  testImplementation testLibraries.mockitoCore
+  testImplementation testLibraries.mockitoJunitJupiter
+  testImplementation testLibraries.testcontainersElasticsearch
+  testImplementation testLibraries.testcontainersJunitJupiter
+}
+
+task buildZip(type: Zip) {
+  from compileJava
+  from processResources
+  into('lib') {
+    from configurations.runtimeClasspath
+  }
+}
+
+build.dependsOn(buildZip)
+
+task deployLocal {
+  copy {
+    from buildZip.archiveFile
+    into("$rootDir/local/lambda")
+    rename {it.replace('-' + project.version.toString(), '') }
+
+  }
+
+  dependsOn build
+}

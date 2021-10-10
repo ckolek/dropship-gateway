@@ -1,10 +1,6 @@
 package me.kolek.ecommerce.dsgw.test.api;
 
 import com.google.common.collect.Iterables;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -12,18 +8,14 @@ import java.util.List;
 import java.util.Map;
 import lombok.Data;
 import lombok.Value;
-import me.kolek.ecommerce.dsgw.test.Constants;
+import me.kolek.ecommerce.dsgw.test.Auth;
 import me.kolek.ecommerce.dsgw.test.Json;
 
-public class GraphQLInvoker {
-  private final Json json;
-  private final HttpClient httpClient;
-
+public class GraphQLInvoker extends HttpApi {
   private final Map<String, String> queries;
 
-  public GraphQLInvoker(Json json) {
-    this.json = json;
-    this.httpClient = HttpClient.newHttpClient();
+  public GraphQLInvoker(Json json, Auth.TokenHolder tokenHolder) {
+    super(json, tokenHolder);
     this.queries = new HashMap<>();
   }
 
@@ -44,28 +36,18 @@ public class GraphQLInvoker {
 
   public <T> T invoke(String query, Map<String, Object> variables, Class<T> dataType)
       throws Exception {
-    byte[] body = json.toByteArray(GraphQLRequest.of(getQuery(query), variables));
+    var response = post("graphql", GraphQLRequest.of(getQuery(query), variables),
+        GraphQLResponse.class).body();
 
-    var request = HttpRequest.newBuilder(Constants.API_BASE_URI.resolve("graphql"))
-        .POST(BodyPublishers.ofByteArray(body))
-        .build();
-
-    var response = httpClient.send(request, BodyHandlers.ofInputStream());
-
-    GraphQLResponse graphQLResponse;
-    try (var inputStream = response.body()) {
-      graphQLResponse = json.parse(inputStream, GraphQLResponse.class);
-    }
-
-    if (graphQLResponse.getErrors() == null || graphQLResponse.getErrors().isEmpty()) {
-      if (!graphQLResponse.getData().isEmpty()) {
-        Object dataValue = Iterables.getOnlyElement(graphQLResponse.getData().values());
+    if (response.getErrors() == null || response.getErrors().isEmpty()) {
+      if (!response.getData().isEmpty()) {
+        Object dataValue = Iterables.getOnlyElement(response.getData().values());
         return json.convert(dataValue, dataType);
       } else {
         return null;
       }
     } else {
-      throw new RuntimeException(graphQLResponse.getErrors().toString());
+      throw new RuntimeException(response.getErrors().toString());
     }
   }
 

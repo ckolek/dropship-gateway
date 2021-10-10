@@ -40,6 +40,9 @@ public class Catalog {
   @Column(name = "external_id", nullable = false, length = 32)
   private String externalId;
 
+  @Column(name = "description", nullable = false, length = 64)
+  private String description;
+
   @OneToMany(mappedBy = "catalog", cascade = CascadeType.ALL)
   @ToString.Exclude
   @EqualsAndHashCode.Exclude

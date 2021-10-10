@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.Status;
 import me.kolek.ecommerce.dsgw.api.model.action.order.acknowledge.AcknowledgeOrderItem;
 import me.kolek.ecommerce.dsgw.api.model.action.order.acknowledge.AcknowledgeOrderRequest;
-import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Type;
+import me.kolek.ecommerce.dsgw.api.model.event.OrderEventDTO.Type;
 import me.kolek.ecommerce.dsgw.events.OrderEventEmitter;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.AcknowledgeOrderAction;
 import me.kolek.ecommerce.dsgw.model.Order;

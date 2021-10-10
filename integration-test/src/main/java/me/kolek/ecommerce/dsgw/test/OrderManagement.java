@@ -6,16 +6,19 @@ import static org.assertj.core.api.Assertions.fail;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import me.kolek.ecommerce.dsgw.api.model.OrderConnection;
+import me.kolek.ecommerce.dsgw.api.model.paging.OrderConnection;
 import me.kolek.ecommerce.dsgw.api.model.OrderDTO;
-import me.kolek.ecommerce.dsgw.api.model.OrderEdge;
+import me.kolek.ecommerce.dsgw.api.model.paging.OrderEdge;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.Status;
 import me.kolek.ecommerce.dsgw.api.model.action.order.cancel.CancelOrderRequest;
 import me.kolek.ecommerce.dsgw.test.api.GraphQLInvoker;
+import me.kolek.ecommerce.dsgw.util.OrderUtil;
 
 @RequiredArgsConstructor
 public class OrderManagement {
@@ -29,6 +32,15 @@ public class OrderManagement {
   @When("A valid order is submitted")
   public void submitOrder() throws Exception {
     var request = SubmitOrder.validRequest();
+
+    requestTime = OffsetDateTime.now();
+    orderActionResult = graphQLInvoker
+        .invoke("SubmitOrder", Map.of("request", request), OrderActionResult.class);
+  }
+
+  @When("A duplicate order is submitted")
+  public void submitDuplicateOrder() throws Exception {
+    var request = SubmitOrder.fromOrder(order);
 
     requestTime = OffsetDateTime.now();
     orderActionResult = graphQLInvoker
@@ -58,6 +70,26 @@ public class OrderManagement {
         OrderActionResult.class);
   }
 
+  @When("A request to ship part of the order is submitted")
+  public void shipPartOfOrder() throws Exception {
+    var request = ShipOrder.shipPartOfOrder(order);
+
+    requestTime = OffsetDateTime.now();
+    orderActionResult = graphQLInvoker.invoke("AddOrderShipment",
+        Map.of("orderId", orderActionResult.getOrderId(), "request", request),
+        OrderActionResult.class);
+  }
+
+  @When("A request to ship the remainder of the order is submitted")
+  public void shipRemainderOfOrder() throws Exception {
+    var request = ShipOrder.shipPartOfOrder(order);
+
+    requestTime = OffsetDateTime.now();
+    orderActionResult = graphQLInvoker.invoke("AddOrderShipment",
+        Map.of("orderId", orderActionResult.getOrderId(), "request", request),
+        OrderActionResult.class);
+  }
+
   @When("A request to ship the entire order is submitted")
   public void shipEntireOrder() throws Exception {
     var request = ShipOrder.shipEntireOrder(order);
@@ -68,21 +100,47 @@ public class OrderManagement {
         OrderActionResult.class);
   }
 
-  @Then("A successful order action response is returned")
-  public void orderWithIdWasReturned() {
+  private void assertThatOrderActionResultSatisfies(Consumer<OrderActionResult> requirements) {
     assertThat(orderActionResult).describedAs("result").isNotNull();
-    if (orderActionResult.getStatus() != Status.SUCCESSFUL) {
-      fail("order action failed with reasons:\n%s",
-          orderActionResult.getReasons().stream().map(r -> " - " + r.getDescription())
-              .collect(Collectors.joining("\n")));
+    assertThat(orderActionResult).describedAs("result").satisfies(requirements);
+  }
+
+  @Then("A successful order action response is returned")
+  public void successfulOrderActionResponseWasReturned() {
+    assertThatOrderActionResultSatisfies(result -> {
+      String reasons = result.getReasons().stream().map(r -> " - " + r.getDescription())
+          .collect(Collectors.joining("\n"));
+
+      assertThat(result.getStatus()).withFailMessage("order action failed with reasons:\n%s",
+          reasons).isSameAs(Status.SUCCESSFUL);
+
+      assertThat(result.getOrderId()).describedAs("order ID").isNotBlank();
+    });
+  }
+
+  @Then("A failed order action response is returned with reasons:")
+  public void failedOrderActionResponseWasReturned(List<String> descriptions) {
+    assertThatOrderActionResultSatisfies(result -> {
+      assertThat(result.getStatus()).describedAs("status").withFailMessage("order action succeeded")
+          .isSameAs(Status.FAILED);
+
+      assertThat(result.getReasons()).describedAs("reasons").allSatisfy(reason -> {
+        assertThat(descriptions).anyMatch(description -> reason.getDescription().matches(description));
+      });
+    });
+  }
+
+  private OrderActionResult getOrderActionResult() {
+    if (orderActionResult == null) {
+      throw new IllegalStateException("order action has not been invoked");
     }
-    assertThat(orderActionResult.getOrderId()).describedAs("result order ID").isNotBlank();
+    return orderActionResult;
   }
 
   @Then("The order exists with status {orderStatus}")
   public void checkOrderWithStatus(OrderDTO.Status orderStatus) throws Exception {
     order = Resilience
-        .retry(() -> tryCheckOrderWithStatus(orderActionResult.getOrderId(), orderStatus));
+        .retry(() -> tryCheckOrderWithStatus(getOrderActionResult().getOrderId(), orderStatus));
   }
 
   @Then("The order is new")
@@ -111,10 +169,39 @@ public class OrderManagement {
     assertThat(order.getCancelReason()).describedAs("cancel reason").isNotNull();
   }
 
+  @Then("The order is partially shipped")
+  public void checkOrderIsShippedPartial() throws Exception {
+    checkOrderWithStatus(OrderDTO.Status.SHIPPED_PARTIAL);
+
+    assertThat(order.getItems()).describedAs("items").allSatisfy(orderItem -> {
+      switch (orderItem.getStatus()) {
+        case NEW -> assertThat(OrderUtil.getQuantityShipped(orderItem)).isZero();
+        case ACKNOWLEDGED -> assertThat(OrderUtil.getQuantityShipped(orderItem)).isZero();
+        case CANCELLED -> assertThat(OrderUtil.getQuantityShipped(orderItem)).isZero();
+        case SHIPPED_PARTIAL -> assertThat(OrderUtil.getQuantityShipped(orderItem))
+            .isStrictlyBetween(0, orderItem.getQuantityAccepted());
+        case SHIPPED -> assertThat(OrderUtil.getQuantityShipped(orderItem)).isEqualTo(
+            orderItem.getQuantityAccepted());
+        default -> fail("unexpected status " + orderItem.getStatus());
+      }
+    });
+    assertThat(order.getPackages()).describedAs("packages").isNotEmpty();
+  }
+
   @Then("The order is shipped")
   public void checkOrderIsShipped() throws Exception {
     checkOrderWithStatus(OrderDTO.Status.SHIPPED);
 
+    assertThat(order.getItems()).describedAs("items").allSatisfy(orderItem -> {
+      switch (orderItem.getStatus()) {
+        case NEW -> assertThat(OrderUtil.getQuantityShipped(orderItem)).isZero();
+        case ACKNOWLEDGED -> assertThat(OrderUtil.getQuantityShipped(orderItem)).isZero();
+        case CANCELLED -> assertThat(OrderUtil.getQuantityShipped(orderItem)).isZero();
+        case SHIPPED -> assertThat(OrderUtil.getQuantityShipped(orderItem)).isEqualTo(
+            orderItem.getQuantityAccepted());
+        default -> fail("unexpected status " + orderItem.getStatus());
+      }
+    });
     assertThat(order.getPackages()).describedAs("packages").isNotEmpty();
   }
 
@@ -134,6 +221,8 @@ public class OrderManagement {
     OrderConnection connection = graphQLInvoker.invoke("SearchOrderById",
         Map.of("id", order.getId()), OrderConnection.class);
     assertThat(connection).describedAs("order connection").isNotNull();
+    assertThat(connection.getPageInfo()).describedAs("pageInfo")
+        .hasFieldOrPropertyWithValue("totalCount", 1L);
     assertThat(connection.getEdges()).describedAs("order edges").singleElement()
         .extracting(OrderEdge::getNode).describedAs("order node")
         .hasFieldOrPropertyWithValue("status", order.getStatus());

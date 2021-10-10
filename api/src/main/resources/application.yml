@@ -6,9 +6,20 @@ spring:
   jackson:
     default-property-inclusion: non_absent
 
+dsgw:
+  auth:
+    url-patterns:
+      - /graphql
+
 server:
   servlet:
     context-path: /api
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 logging:
   level:

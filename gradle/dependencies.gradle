@@ -1,13 +1,16 @@
 ext {
   versions = [
       awsSdk       : '1.12.31',
+      bouncycastle : '1.69',
       caffeine     : '3.0.1',
       camel        : '3.8.0',
       elasticsearch: '7.13.3',
+      flyway       : '7.15.0',
       graphql      : '11.0.0',
       guava        : '27.1-jre',
       jackson      : '2.12.3',
       javaxInject  : '1',
+      jwt          : '0.11.2',
       log4j        : '2.14.1',
       mapstruct    : '1.4.2.Final',
       postgresql   : '42.2.5',
@@ -17,10 +20,12 @@ ext {
   ]
 
   libraries = [
+      apacheCommonsLogging              : "commons-logging:commons-logging:1.2",
       awsSdkSns                         : "com.amazonaws:aws-java-sdk-sns:${versions.awsSdk}",
       awsSdkSqs                         : "com.amazonaws:aws-java-sdk-sqs:${versions.awsSdk}",
       awsLambdaJavaCore                 : "com.amazonaws:aws-lambda-java-core:1.2.1",
       awsLambdaJavaEvents               : "com.amazonaws:aws-lambda-java-events:3.9.0",
+      bouncycastleProvider              : "org.bouncycastle:bcprov-jdk15on:${versions.bouncycastle}",
       caffeine                          : "com.github.ben-manes.caffeine:caffeine:${versions.caffeine}",
       camelJackson                      : "org.apache.camel:camel-jackson:${versions.camel}",
       camelSpringBootStarter            : "org.apache.camel.springboot:camel-spring-boot-starter:${versions.camel}",
@@ -28,6 +33,7 @@ ext {
       camelSpringBootJacksonStarter     : "org.apache.camel.springboot:camel-jackson-starter:${versions.camel}",
       elasticsearch                     : "org.elasticsearch:elasticsearch:${versions.elasticsearch}",
       elasticsearchRestHighLevelClient  : "org.elasticsearch.client:elasticsearch-rest-high-level-client:${versions.elasticsearch}",
+      flywayCore                        : "org.flywaydb:flyway-core:${versions.flyway}",
       graphqlSpringBootStarter          : "com.graphql-java-kickstart:graphql-spring-boot-starter:${versions.graphql}",
       guava                             : "com.google.guava:guava:${versions.guava}",
       jacksonAnnotations                : "com.fasterxml.jackson.core:jackson-annotations:${versions.jackson}",
@@ -35,6 +41,9 @@ ext {
       jacksonDatatypeJsr310             : "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${versions.jackson}",
       jacksonModuleParameterNames       : "com.fasterxml.jackson.module:jackson-module-parameter-names:${versions.jackson}",
       javaxInject                       : "javax.inject:javax.inject:${versions.javaxInject}",
+      jjwtApi                           : "io.jsonwebtoken:jjwt-api:${versions.jwt}",
+      jjwtImpl                          : "io.jsonwebtoken:jjwt-impl:${versions.jwt}",
+      jjwtJackson                       : "io.jsonwebtoken:jjwt-jackson:${versions.jwt}",
       log4jApi                          : "org.apache.logging.log4j:log4j-api:${versions.log4j}",
       log4jCore                         : "org.apache.logging.log4j:log4j-core:${versions.log4j}",
       log4jSlf4jImpl                    : "org.apache.logging.log4j:log4j-slf4j-impl:${versions.log4j}",
@@ -56,7 +65,7 @@ ext {
       cucumber      : '6.10.3',
       junit         : '5.7.1',
       mockito       : '3.6.28',
-      testcontainers: '1.15.3'
+      testcontainers: '1.16.0'
   ]
 
   testLibraries = [
@@ -72,6 +81,7 @@ ext {
       mockitoJunitJupiter        : "org.mockito:mockito-junit-jupiter:${testVersions.mockito}",
       springBootStarterTest      : "org.springframework.boot:spring-boot-starter-test",
       testcontainersElasticsearch: "org.testcontainers:elasticsearch:${testVersions.testcontainers}",
-      testcontainersJunitJupiter : "org.testcontainers:junit-jupiter:${testVersions.testcontainers}"
+      testcontainersJunitJupiter : "org.testcontainers:junit-jupiter:${testVersions.testcontainers}",
+      testcontainersPostgresql   : "org.testcontainers:postgresql:${testVersions.testcontainers}"
   ]
 }

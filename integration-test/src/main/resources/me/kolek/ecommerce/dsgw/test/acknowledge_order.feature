@@ -2,7 +2,8 @@ Feature: Acknowledge Order
   An order can be acknowledged (accepted or rejected)
 
   Background:
-    Given The order events queue is purged
+    Given Client is authenticated as admin organization
+    And The order events queue is purged
 
   Scenario:
     When A valid order is submitted

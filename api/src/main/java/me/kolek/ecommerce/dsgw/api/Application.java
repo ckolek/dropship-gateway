@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(scanBasePackages = "me.kolek.ecommerce.dsgw")
 @EntityScan(basePackages = "me.kolek.ecommerce.dsgw.model")
-@EnableJpaRepositories(basePackages = "me.kolek.ecommerce.dsgw.repository", repositoryBaseClass = ExtendedJpaRepositoryImpl.class)
+@EnableJpaRepositories(basePackages = "me.kolek.ecommerce.dsgw.repository",
+    repositoryBaseClass = ExtendedJpaRepositoryImpl.class)
 public class Application {
 
   public static void main(String[] args) {

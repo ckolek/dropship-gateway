@@ -30,6 +30,7 @@ public class CatalogMapperImpl extends CatalogMapper {
             catalogDTO.setId( String.valueOf( catalog.getId() ) );
         }
         catalogDTO.setExternalId( catalog.getExternalId() );
+        catalogDTO.setDescription( catalog.getDescription() );
         catalogDTO.setTimeCreated( catalog.getTimeCreated() );
         catalogDTO.setTimeUpdated( catalog.getTimeUpdated() );
 

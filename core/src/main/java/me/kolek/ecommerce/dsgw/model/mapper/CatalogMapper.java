@@ -24,6 +24,15 @@ public abstract class CatalogMapper {
   @Inject
   private CatalogEntryMapper catalogEntryMapper;
 
+  public CatalogDTO catalogToDto(Catalog catalog, @Context MappingFieldSelection selection) {
+    return catalogToDto(catalog, new CycleAvoidingMappingContext(), selection);
+  }
+
+  public CatalogDTO catalogToDto(Catalog catalog, boolean setParentReferences,
+      @Context MappingFieldSelection selection) {
+    return catalogToDto(catalog, new CycleAvoidingMappingContext(setParentReferences), selection);
+  }
+
   @Mapping(target = FIELD__SUPPLIER, ignore = true)
   @Mapping(target = FIELD__ITEMS, ignore = true)
   abstract CatalogDTO catalogToDto(Catalog catalog, @Context CycleAvoidingMappingContext context,

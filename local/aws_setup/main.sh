@@ -78,11 +78,11 @@ function create_lambda() {
     aws --endpoint-url=${AWS_URL} lambda create-function \
       --function-name $1 \
       --runtime $2 \
-      --handler $3 \
+      --zip-file fileb:///aws/lambda/$3.zip \
+      --handler $4 \
       --memory-size 128 \
-      --zip-file fileb:///aws/lambda/$1.zip \
       --role arn:aws:iam::${AWS_ACCOUNT_ID}:role/dummy \
-      --environment Variables={$4} \
+      --environment Variables={$5} \
       --timeout 30
     retCode=$?
     ((attempts+=1))
@@ -112,10 +112,19 @@ function create_topic_to_lambda_subscription() {
 
 create_queue "order-actions"
 create_queue "order-action-results"
+
 create_topic "order-events"
 create_queue "order-events"
 create_topic_to_queue_subscription "order-events" "order-events"
-create_lambda "order-event-handler" "java11" \
+create_lambda "order-event-handler" "java11" "event-handlers" \
               "me.kolek.ecommerce.dsgw.events.handler.OrderEventHandler" \
               "ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS}"
 create_topic_to_lambda_subscription "order-events" "order-event-handler"
+
+create_topic "catalog-events"
+create_queue "catalog-events"
+create_topic_to_queue_subscription "catalog-events" "catalog-events"
+create_lambda "catalog-event-handler" "java11" "event-handlers" \
+              "me.kolek.ecommerce.dsgw.events.handler.CatalogEventHandler" \
+              "ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS}"
+create_topic_to_lambda_subscription "catalog-events" "catalog-event-handler"

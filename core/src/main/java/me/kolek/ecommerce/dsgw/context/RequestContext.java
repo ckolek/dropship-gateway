@@ -1,7 +1,10 @@
 package me.kolek.ecommerce.dsgw.context;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,31 @@ public class RequestContext implements AutoCloseable {
 
   @Getter
   private final String id;
+  private final Map<String, Object> values = new HashMap<>();
+
+  public boolean containsKey(String key) {
+    return values.containsKey(key);
+  }
+
+  public <T> Optional<T> getValue(String key) {
+    return Optional.ofNullable((T) values.get(key));
+  }
+
+  public <T> Optional<T> putValue(String key, T value) {
+    return Optional.ofNullable((T) values.put(key, value));
+  }
+
+  public <T> Optional<T> putValueIfAbsent(String key, T value) {
+    return Optional.ofNullable((T) values.putIfAbsent(key, value));
+  }
+
+  public <T> Optional<T> removeValue(String key) {
+    return Optional.ofNullable((T) values.remove(key));
+  }
+
+  public void clearValues() {
+    values.clear();
+  }
 
   @Override
   public void close() {
@@ -54,5 +82,13 @@ public class RequestContext implements AutoCloseable {
   public static RequestContext get() {
     return getOptionally()
         .orElseThrow(() -> new IllegalStateException("request context has not been initialized"));
+  }
+
+  public static void use(Consumer<RequestContext> action) {
+    action.accept(get());
+  }
+
+  public static void ifPresent(Consumer<RequestContext> action) {
+    getOptionally().ifPresent(action);
   }
 }

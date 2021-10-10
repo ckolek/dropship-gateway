@@ -3,12 +3,12 @@ package me.kolek.ecommerce.dsgw.test;
 import java.time.OffsetDateTime;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 import me.kolek.ecommerce.dsgw.api.model.ContactDTO;
 import me.kolek.ecommerce.dsgw.api.model.OrderDTO;
 import me.kolek.ecommerce.dsgw.api.model.action.order.ship.OrderShipmentCorrespondent;
 import me.kolek.ecommerce.dsgw.api.model.action.order.ship.OrderShipmentItem;
 import me.kolek.ecommerce.dsgw.api.model.action.order.ship.OrderShipmentRequest;
+import me.kolek.ecommerce.dsgw.util.OrderUtil;
 
 public class ShipOrder {
 
@@ -28,6 +28,64 @@ public class ShipOrder {
     return new String(chars);
   }
 
+  public static OrderShipmentRequest shipPartOfOrder(OrderDTO order) {
+    return OrderShipmentRequest.builder()
+        .sender(OrderShipmentCorrespondent.builder()
+            .contact(ContactDTO.builder()
+                .name("Some Vendor")
+                .email("some1@vendor.com")
+                .phone("508-890-2134")
+                .build())
+            .address(order.getWarehouse().getAddress())
+            .build())
+        .recipient(OrderShipmentCorrespondent.builder()
+            .contact(order.getRecipient().getContact())
+            .address(order.getRecipient().getAddress())
+            .build())
+        .items(order.getItems().stream()
+            .filter(OrderUtil::hasQuantityRemaining)
+            .limit(1)
+            .map(orderItem -> OrderShipmentItem.builder()
+                .orderLineNumber(orderItem.getLineNumber())
+                .quantity(1)
+                .build())
+            .toList())
+        .warehouseCode(order.getWarehouse().getSupplierCode())
+        .carrierServiceLevelCode(order.getServiceLevel().getCode())
+        .trackingNumber(generateTrackingNumber())
+        .timeShipped(OffsetDateTime.now())
+        .build();
+  }
+
+  public static OrderShipmentRequest shipRemainderOfOrder(OrderDTO order) {
+    return OrderShipmentRequest.builder()
+        .sender(OrderShipmentCorrespondent.builder()
+            .contact(ContactDTO.builder()
+                .name("Some Vendor")
+                .email("some1@vendor.com")
+                .phone("508-890-2134")
+                .build())
+            .address(order.getWarehouse().getAddress())
+            .build())
+        .recipient(OrderShipmentCorrespondent.builder()
+            .contact(order.getRecipient().getContact())
+            .address(order.getRecipient().getAddress())
+            .build())
+        .items(order.getItems().stream()
+            .filter(OrderUtil::hasQuantityRemaining)
+            .limit(1)
+            .map(orderItem -> OrderShipmentItem.builder()
+                .orderLineNumber(orderItem.getLineNumber())
+                .quantity(OrderUtil.getQuantityRemaining(orderItem))
+                .build())
+            .toList())
+        .warehouseCode(order.getWarehouse().getSupplierCode())
+        .carrierServiceLevelCode(order.getServiceLevel().getCode())
+        .trackingNumber(generateTrackingNumber())
+        .timeShipped(OffsetDateTime.now())
+        .build();
+  }
+
   public static OrderShipmentRequest shipEntireOrder(OrderDTO order) {
     return OrderShipmentRequest.builder()
         .sender(OrderShipmentCorrespondent.builder()
@@ -45,7 +103,7 @@ public class ShipOrder {
         .items(order.getItems().stream()
             .map(orderItem -> OrderShipmentItem.builder()
                 .orderLineNumber(orderItem.getLineNumber())
-                .quantity(orderItem.getQuantity())
+                .quantity(OrderUtil.getQuantityExpected(orderItem))
                 .build())
             .toList())
         .warehouseCode(order.getWarehouse().getSupplierCode())

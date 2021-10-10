@@ -8,5 +8,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("dsgw.events")
 @Data
 public class EventProperties {
+  private String catalogEventTopicArn;
   private String orderEventTopicArn;
 }

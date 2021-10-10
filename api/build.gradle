@@ -1,6 +1,9 @@
 dependencies {
+  implementation project(':auth')
   implementation project(':aws-support')
   implementation project(':internal-model')
 
   implementation libraries.graphqlSpringBootStarter
+  runtimeClasspath libraries.jjwtImpl
+  runtimeClasspath libraries.jjwtJackson
 }

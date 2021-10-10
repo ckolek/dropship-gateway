@@ -6,7 +6,7 @@ import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.OrderActionResultBuilder;
 import me.kolek.ecommerce.dsgw.api.model.action.order.ship.OrderShipmentItem;
 import me.kolek.ecommerce.dsgw.api.model.action.order.ship.OrderShipmentRequest;
-import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Type;
+import me.kolek.ecommerce.dsgw.api.model.event.OrderEventDTO.Type;
 import me.kolek.ecommerce.dsgw.events.OrderEventEmitter;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.AddOrderShipmentAction;
 import me.kolek.ecommerce.dsgw.model.Order;
@@ -134,16 +134,23 @@ public class AddOrderShipmentActionProcessor extends BaseOrderActionProcessor<Ad
 
   private boolean processItemStatus(OrderItem orderItem,
       OrderActionResult.OrderActionResultBuilder result) {
+    int quantityExpected = OrderUtil.getQuantityExpected(orderItem);
+    if (quantityExpected == 0) {
+      return false;
+    }
+
     int quantityShipped = OrderUtil.getQuantityShipped(orderItem);
-    if (quantityShipped < orderItem.getQuantityAccepted()) {
+    if (quantityShipped == 0) {
+      return false;
+    } else if (quantityShipped < quantityExpected) {
       orderItem.setStatus(Status.SHIPPED_PARTIAL);
       return false;
-    } else if (quantityShipped == orderItem.getQuantityAccepted()) {
+    } else if (quantityShipped == quantityExpected) {
       orderItem.setStatus(Status.SHIPPED);
       return true;
     } else {
-      fail(result, "quantity shipped for order item with line number " + orderItem.getLineNumber()
-          + " is greater than quantity accepted");
+      fail(result, "quantity shipped (" + quantityExpected + ") is greater than quantity expected ("
+          + quantityShipped + ") for order item with line number " + orderItem.getLineNumber());
       return false;
     }
   }

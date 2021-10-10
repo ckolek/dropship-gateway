@@ -3,6 +3,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/dsgw
     password: dsgw
 
+dsgw:
+  security:
+    public-key-path: ${user.home}/.ssh/id_rsa.pub
+    private-key-path: ${user.home}/.ssh/id_rsa
+
 aws:
   sqs:
     region: us-east-1

@@ -10,17 +10,6 @@ CREATE TABLE IF NOT EXISTS order_cancel_code
     CONSTRAINT order_cancel_code_uk01 UNIQUE (code)
 );
 
-ALTER TABLE order_cancel_code OWNER TO dsgw;
-REVOKE ALL ON TABLE order_cancel_code FROM PUBLIC;
-GRANT ALL ON TABLE order_cancel_code TO dsgw;
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE order_cancel_code to dsgwapp;
-
-ALTER SEQUENCE order_cancel_code_id_seq OWNER TO dsgw;
-ALTER SEQUENCE order_cancel_code_id_seq RESTART WITH 1000000;
-REVOKE ALL ON SEQUENCE order_cancel_code_id_seq FROM PUBLIC;
-GRANT ALL ON SEQUENCE order_cancel_code_id_seq TO dsgw;
-GRANT SELECT, UPDATE ON SEQUENCE order_cancel_code_id_seq TO dsgwapp;
-
 CREATE TABLE IF NOT EXISTS "order"
 (
     id                    BIGSERIAL   NOT NULL,
@@ -60,17 +49,6 @@ CREATE INDEX IF NOT EXISTS order_idx01 ON "order" (warehouse_id);
 CREATE INDEX IF NOT EXISTS order_idx02 ON "order" (service_level_id);
 CREATE INDEX IF NOT EXISTS order_idx03 ON "order" (cancel_code_id);
 
-ALTER TABLE "order" OWNER TO dsgw;
-REVOKE ALL ON TABLE "order" FROM PUBLIC;
-GRANT ALL ON TABLE "order" TO dsgw;
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE "order" to dsgwapp;
-
-ALTER SEQUENCE order_id_seq OWNER TO dsgw;
-ALTER SEQUENCE order_id_seq RESTART WITH 1000000;
-REVOKE ALL ON SEQUENCE order_id_seq FROM PUBLIC;
-GRANT ALL ON SEQUENCE order_id_seq TO dsgw;
-GRANT SELECT, UPDATE ON SEQUENCE order_id_seq TO dsgwapp;
-
 CREATE TABLE IF NOT EXISTS order_item
 (
     id                     BIGSERIAL   NOT NULL,
@@ -105,14 +83,3 @@ CREATE TABLE IF NOT EXISTS order_item
 CREATE INDEX IF NOT EXISTS order_item_idx01 ON order_item (catalog_item_id);
 CREATE INDEX IF NOT EXISTS order_item_idx02 ON order_item (reject_code_id);
 CREATE INDEX IF NOT EXISTS order_item_idx03 ON order_item (cancel_code_id);
-
-ALTER TABLE order_item OWNER TO dsgw;
-REVOKE ALL ON TABLE order_item FROM PUBLIC;
-GRANT ALL ON TABLE order_item TO dsgw;
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE order_item to dsgwapp;
-
-ALTER SEQUENCE order_item_id_seq OWNER TO dsgw;
-ALTER SEQUENCE order_item_id_seq RESTART WITH 1000000;
-REVOKE ALL ON SEQUENCE order_item_id_seq FROM PUBLIC;
-GRANT ALL ON SEQUENCE order_item_id_seq TO dsgw;
-GRANT SELECT, UPDATE ON SEQUENCE order_item_id_seq TO dsgwapp;

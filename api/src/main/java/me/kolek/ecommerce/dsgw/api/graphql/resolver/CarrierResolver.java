@@ -2,7 +2,7 @@ package me.kolek.ecommerce.dsgw.api.graphql.resolver;
 
 import graphql.kickstart.tools.GraphQLResolver;
 import me.kolek.ecommerce.dsgw.api.model.CarrierDTO;
-import me.kolek.ecommerce.dsgw.api.model.ServiceLevelConnection;
+import me.kolek.ecommerce.dsgw.api.model.paging.ServiceLevelConnection;
 import me.kolek.ecommerce.dsgw.api.model.ServiceLevelDTO;
 import org.springframework.stereotype.Component;
 

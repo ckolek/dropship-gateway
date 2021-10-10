@@ -42,17 +42,6 @@ CREATE TABLE IF NOT EXISTS package
 CREATE INDEX IF NOT EXISTS package_idx01 ON package (order_id);
 CREATE INDEX IF NOT EXISTS package_idx02 ON package (service_level_id);
 
-ALTER TABLE package OWNER TO dsgw;
-REVOKE ALL ON TABLE package FROM PUBLIC;
-GRANT ALL ON TABLE package TO dsgw;
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE package to dsgwapp;
-
-ALTER SEQUENCE package_id_seq OWNER TO dsgw;
-ALTER SEQUENCE package_id_seq RESTART WITH 1000000;
-REVOKE ALL ON SEQUENCE package_id_seq FROM PUBLIC;
-GRANT ALL ON SEQUENCE package_id_seq TO dsgw;
-GRANT SELECT, UPDATE ON SEQUENCE package_id_seq TO dsgwapp;
-
 CREATE TABLE IF NOT EXISTS package_item
 (
     id             BIGSERIAL   NOT NULL,
@@ -67,14 +56,3 @@ CREATE TABLE IF NOT EXISTS package_item
     CONSTRAINT package_item_fk01 FOREIGN KEY (package_id) REFERENCES package (id) ON DELETE CASCADE,
     CONSTRAINT package_item_fk02 FOREIGN KEY (order_item_id) REFERENCES order_item (id)
 );
-
-ALTER TABLE package_item OWNER TO dsgw;
-REVOKE ALL ON TABLE package_item FROM PUBLIC;
-GRANT ALL ON TABLE package_item TO dsgw;
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE package_item to dsgwapp;
-
-ALTER SEQUENCE package_item_id_seq OWNER TO dsgw;
-ALTER SEQUENCE package_item_id_seq RESTART WITH 1000000;
-REVOKE ALL ON SEQUENCE package_item_id_seq FROM PUBLIC;
-GRANT ALL ON SEQUENCE package_item_id_seq TO dsgw;
-GRANT SELECT, UPDATE ON SEQUENCE package_item_id_seq TO dsgwapp;

@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.Status;
-import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Type;
+import me.kolek.ecommerce.dsgw.api.model.event.OrderEventDTO.Type;
 import me.kolek.ecommerce.dsgw.events.OrderEventEmitter;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.SubmitOrderAction;
 import me.kolek.ecommerce.dsgw.model.CatalogItem;

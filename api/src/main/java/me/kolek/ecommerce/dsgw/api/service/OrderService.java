@@ -7,10 +7,10 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import me.kolek.ecommerce.dsgw.api.graphql.service.DataFetchingEnvironmentMappingFieldSelection;
-import me.kolek.ecommerce.dsgw.api.model.OrderConnection;
-import me.kolek.ecommerce.dsgw.api.model.OrderCriteriaDTO;
+import me.kolek.ecommerce.dsgw.api.model.paging.OrderConnection;
+import me.kolek.ecommerce.dsgw.api.model.criteria.OrderCriteriaDTO;
 import me.kolek.ecommerce.dsgw.api.model.OrderDTO;
-import me.kolek.ecommerce.dsgw.api.model.OrderEdge;
+import me.kolek.ecommerce.dsgw.api.model.paging.OrderEdge;
 import me.kolek.ecommerce.dsgw.api.util.PageUtil;
 import me.kolek.ecommerce.dsgw.model.Order;
 import me.kolek.ecommerce.dsgw.model.mapper.OrderMapper;
@@ -40,7 +40,7 @@ public class OrderService {
   }
 
   public OrderConnection searchOrders(OrderCriteriaDTO criteria, int pageNumber, int pageSize) {
-    var results = orderSearch.searchOrders(criteria, PageRequest.of(pageNumber, pageSize));
+    var results = orderSearch.search(criteria, PageRequest.of(pageNumber, pageSize));
     return PageUtil.toConnection(results, OrderEdge::new, OrderConnection::new);
   }
 

@@ -1,0 +1,6 @@
+
+
+input CreateCatalogRequest {
+    name: String!
+    supplierId: ID
+}

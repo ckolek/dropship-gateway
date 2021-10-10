@@ -16,6 +16,7 @@ import lombok.ToString;
 public class CatalogDTO {
   private String id;
   private String externalId;
+  private String description;
   private SupplierDTO supplier;
   @EqualsAndHashCode.Exclude
   @ToString.Exclude

@@ -2,17 +2,10 @@ package me.kolek.ecommerce.dsgw.model.mapper;
 
 import static me.kolek.ecommerce.dsgw.model.mapper.MapperUtil.mapIfSelected;
 
-import java.util.List;
 import javax.inject.Inject;
-import me.kolek.ecommerce.dsgw.api.model.InvoiceDTO;
 import me.kolek.ecommerce.dsgw.api.model.OrderDTO;
-import me.kolek.ecommerce.dsgw.api.model.OrderItemDTO;
-import me.kolek.ecommerce.dsgw.api.model.PackageDTO;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRequest;
-import me.kolek.ecommerce.dsgw.model.Invoice;
 import me.kolek.ecommerce.dsgw.model.Order;
-import me.kolek.ecommerce.dsgw.model.OrderItem;
-import me.kolek.ecommerce.dsgw.model.Package;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Builder;
 import org.mapstruct.Context;

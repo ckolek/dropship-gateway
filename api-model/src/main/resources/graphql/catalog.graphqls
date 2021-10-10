@@ -28,6 +28,8 @@ extend type Supplier {
 
 type Catalog {
     id: ID!
+    externalId: String!
+    description: String
     supplier: Supplier!
     timeCreated: DateTime!
     timeUpdated: DateTime!
@@ -53,6 +55,9 @@ type CatalogEdge implements Edge {
 type CatalogEntry {
     id: ID!
     catalog: Catalog!
+    name: String!
+    shortDescription: String
+    longDescription: String
     sku: String!
     gtin: String
     upc: String
@@ -79,6 +84,8 @@ type CatalogEntryEdge implements Edge {
 
 input CatalogCriteria {
     id: ID
+    externalId: String
+    description: String
     suppliers: [SupplierCriteria]
     timeCreated: DateTimeCriteria
     timeUpdated: DateTimeCriteria
@@ -87,6 +94,9 @@ input CatalogCriteria {
 input CatalogEntryCriteria {
     id: ID
     catalogs: [CatalogCriteria]
+    name: String
+    shortDescription: String
+    longDescription: String
     sku: String
     gtin: String
     upc: String

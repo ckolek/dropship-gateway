@@ -6,7 +6,7 @@ import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.OrderActionResultBuilder;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderItem;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRequest;
-import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Type;
+import me.kolek.ecommerce.dsgw.api.model.event.OrderEventDTO.Type;
 import me.kolek.ecommerce.dsgw.events.OrderEventEmitter;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.SubmitOrderAction;
 import me.kolek.ecommerce.dsgw.model.CatalogItem;

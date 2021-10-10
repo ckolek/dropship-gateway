@@ -12,17 +12,6 @@ CREATE TABLE IF NOT EXISTS invoice
 
 CREATE INDEX IF NOT EXISTS invoice_idx01 ON invoice (order_id);
 
-ALTER TABLE invoice OWNER TO dsgw;
-REVOKE ALL ON TABLE invoice FROM PUBLIC;
-GRANT ALL ON TABLE invoice TO dsgw;
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE invoice to dsgwapp;
-
-ALTER SEQUENCE invoice_id_seq OWNER TO dsgw;
-ALTER SEQUENCE invoice_id_seq RESTART WITH 1000000;
-REVOKE ALL ON SEQUENCE invoice_id_seq FROM PUBLIC;
-GRANT ALL ON SEQUENCE invoice_id_seq TO dsgw;
-GRANT SELECT, UPDATE ON SEQUENCE invoice_id_seq TO dsgwapp;
-
 CREATE TABLE IF NOT EXISTS invoice_item
 (
     id             BIGSERIAL   NOT NULL,
@@ -37,14 +26,3 @@ CREATE TABLE IF NOT EXISTS invoice_item
     CONSTRAINT invoice_item_fk01 FOREIGN KEY (invoice_id) REFERENCES invoice (id) ON DELETE CASCADE,
     CONSTRAINT invoice_item_fk02 FOREIGN KEY (order_item_id) REFERENCES order_item (id)
 );
-
-ALTER TABLE invoice_item OWNER TO dsgw;
-REVOKE ALL ON TABLE invoice_item FROM PUBLIC;
-GRANT ALL ON TABLE invoice_item TO dsgw;
-GRANT INSERT, SELECT, UPDATE, DELETE ON TABLE invoice_item to dsgwapp;
-
-ALTER SEQUENCE invoice_item_id_seq OWNER TO dsgw;
-ALTER SEQUENCE invoice_item_id_seq RESTART WITH 1000000;
-REVOKE ALL ON SEQUENCE invoice_item_id_seq FROM PUBLIC;
-GRANT ALL ON SEQUENCE invoice_item_id_seq TO dsgw;
-GRANT SELECT, UPDATE ON SEQUENCE invoice_item_id_seq TO dsgwapp;

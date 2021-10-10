@@ -10,7 +10,7 @@ import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult;
 import me.kolek.ecommerce.dsgw.api.model.action.order.OrderActionResult.OrderActionResultBuilder;
 import me.kolek.ecommerce.dsgw.api.model.action.order.acknowledge.AcknowledgeOrderItem;
 import me.kolek.ecommerce.dsgw.api.model.action.order.acknowledge.AcknowledgeOrderRequest;
-import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO.Type;
+import me.kolek.ecommerce.dsgw.api.model.event.OrderEventDTO.Type;
 import me.kolek.ecommerce.dsgw.events.OrderEventEmitter;
 import me.kolek.ecommerce.dsgw.internal.model.order.action.AcknowledgeOrderAction;
 import me.kolek.ecommerce.dsgw.model.Order;
@@ -76,7 +76,7 @@ public class AcknowledgeOrderActionProcessor extends
 
   private void acknowledgeItems(Order order, List<AcknowledgeOrderItem> acknowledgeOrderItems,
       OffsetDateTime timeAcknowledged, OrderActionResult.OrderActionResultBuilder result) {
-    Map<Integer, OrderItem> orderItemsByLineNumber = OrderUtil.mapOrderItemsByLineNumber(order);
+    Map<Integer, OrderItem> orderItemsByLineNumber = OrderUtil.collectOrderItemsByLineNumber(order);
 
     for (AcknowledgeOrderItem acknowledgeOrderItem : acknowledgeOrderItems) {
       Integer lineNumber = acknowledgeOrderItem.getLineNumber();
@@ -115,18 +115,25 @@ public class AcknowledgeOrderActionProcessor extends
     int quantityAccepted, quantityRejected;
     if (acknowledgeOrderItem.getQuantityAccepted() != null
         && acknowledgeOrderItem.getQuantityRejected() != null) {
+      // both quantities are explicitly provided
       quantityAccepted = acknowledgeOrderItem.getQuantityAccepted();
       quantityRejected = acknowledgeOrderItem.getQuantityRejected();
     } else if (acknowledgeOrderItem.getQuantityAccepted() != null) {
+      // quantity accepted is provided; quantity rejected is quantity ordered less quantity accepted
       quantityAccepted = acknowledgeOrderItem.getQuantityAccepted();
       quantityRejected = orderItem.getQuantity() - quantityAccepted;
     } else if (acknowledgeOrderItem.getQuantityRejected() != null) {
+      // quantity rejected is provided; quantity accepted is quantity ordered less quantity rejected
       quantityRejected = acknowledgeOrderItem.getQuantityRejected();
       quantityAccepted = orderItem.getQuantity() - quantityRejected;
     } else if (acknowledgeOrderItem.getRejectCode() != null) {
+      // if neither quantity is provided but reject code is, entire quantity ordered is implicitly
+      // rejected
       quantityAccepted = 0;
       quantityRejected = orderItem.getQuantity();
     } else {
+      // if neither quantity nor reject code are provided, entire quantity ordered is implicitly
+      // accepted
       quantityAccepted = orderItem.getQuantity();
       quantityRejected = 0;
     }

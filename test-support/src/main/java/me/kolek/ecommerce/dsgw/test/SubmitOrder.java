@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import me.kolek.ecommerce.dsgw.api.model.AddressDTO;
 import me.kolek.ecommerce.dsgw.api.model.ContactDTO;
+import me.kolek.ecommerce.dsgw.api.model.OrderDTO;
+import me.kolek.ecommerce.dsgw.api.model.OrderItemDTO;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderItem;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRecipient;
 import me.kolek.ecommerce.dsgw.api.model.action.order.submit.SubmitOrderRequest;
@@ -47,5 +49,36 @@ public class SubmitOrder {
 
   public static SubmitOrderRequest validRequest() {
     return validRequest(2);
+  }
+
+  public static SubmitOrderRequest fromOrder(OrderDTO order) {
+    return SubmitOrderRequest.builder()
+        .orderNumber(order.getOrderNumber())
+        .customerOrderNumber(order.getCustomerOrderNumber())
+        .warehouseCode(order.getWarehouse().getCode())
+        .recipient(SubmitOrderRecipient.builder()
+            .contact(order.getRecipient().getContact())
+            .address(order.getRecipient().getAddress())
+            .build())
+        .items(order.getItems().stream().map(SubmitOrder::fromOrderItem).toList())
+        .carrierName(order.getServiceLevel().getCarrier().getName())
+        .carrierMode(order.getServiceLevel().getMode())
+        .timeOrdered(order.getTimeOrdered())
+        .timeReleased(order.getTimeReleased())
+        .build();
+  }
+
+  private static SubmitOrderItem fromOrderItem(OrderItemDTO orderItem) {
+    return SubmitOrderItem.builder()
+        .sku(orderItem.getCatalogEntry().getSku())
+        .gtin(orderItem.getCatalogEntry().getSku())
+        .upc(orderItem.getCatalogEntry().getSku())
+        .ean(orderItem.getCatalogEntry().getSku())
+        .isbn(orderItem.getCatalogEntry().getSku())
+        .quantity(orderItem.getQuantity())
+        .customization(orderItem.getCustomization())
+        .expectedShipDate(orderItem.getExpectedShipDate())
+        .expectedDeliveryDate(orderItem.getExpectedDeliveryDate())
+        .build();
   }
 }

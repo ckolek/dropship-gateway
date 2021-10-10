@@ -1,0 +1,13 @@
+apply plugin: 'java-library'
+
+dependencies {
+  api project(':core')
+  implementation libraries.bouncycastleProvider
+  api libraries.jjwtApi
+
+  testImplementation testLibraries.assertjCore
+  testImplementation testLibraries.mockitoCore
+  testImplementation testLibraries.mockitoJunitJupiter
+
+  annotationProcessor libraries.springBootConfigurationProcessor
+}

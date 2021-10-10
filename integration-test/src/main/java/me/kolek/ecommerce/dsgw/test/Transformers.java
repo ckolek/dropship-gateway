@@ -2,7 +2,7 @@ package me.kolek.ecommerce.dsgw.test;
 
 import io.cucumber.java.ParameterType;
 import me.kolek.ecommerce.dsgw.api.model.OrderDTO;
-import me.kolek.ecommerce.dsgw.api.model.event.order.OrderEventDTO;
+import me.kolek.ecommerce.dsgw.api.model.event.OrderEventDTO;
 
 public class Transformers {
 
