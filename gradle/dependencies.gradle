@@ -54,6 +54,7 @@ ext {
       slf4jApi                          : "org.slf4j:slf4j-api:${versions.slf4j}",
       springBootConfigurationProcessor  : "org.springframework.boot:spring-boot-configuration-processor:${versions.springBoot}",
       springBootStarterActuator         : "org.springframework.boot:spring-boot-starter-actuator",
+      springBootStarterAop              : "org.springframework.boot:spring-boot-starter-aop",
       springBootStarterDataJpa          : "org.springframework.boot:spring-boot-starter-data-jpa",
       springBootStarterDataElasticsearch: "org.springframework.boot:spring-boot-starter-data-elasticsearch",
       springBootStarterIntegration      : "org.springframework.boot:spring-boot-starter-integration",

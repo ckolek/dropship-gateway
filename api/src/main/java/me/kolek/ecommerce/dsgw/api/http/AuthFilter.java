@@ -3,21 +3,16 @@ package me.kolek.ecommerce.dsgw.api.http;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.kolek.ecommerce.dsgw.auth.AuthContext;
 import me.kolek.ecommerce.dsgw.auth.AuthException;
 import me.kolek.ecommerce.dsgw.auth.AuthProperties;
-import me.kolek.ecommerce.dsgw.auth.AuthScopeSet;
-import me.kolek.ecommerce.dsgw.auth.MoreClaims;
 import me.kolek.ecommerce.dsgw.auth.token.AuthTokenGenerator;
-import me.kolek.ecommerce.dsgw.context.RequestContext;
 import org.apache.http.HttpStatus;
 
 @RequiredArgsConstructor
@@ -50,22 +45,16 @@ public class AuthFilter extends HttpFilter {
       return;
     }
 
-    Claims claims = jws.getBody();
-
-    RequestContext.use(requestContext -> {
-      requestContext.putValue(JWS, jws);
-      Optional.ofNullable(claims.get(MoreClaims.SERVICE_ID, Long.class))
-          .ifPresent(serviceId -> requestContext.putValue(MoreClaims.SERVICE_ID, serviceId));
-      Optional.ofNullable(claims.get(MoreClaims.ORG_ID, Long.class))
-          .ifPresent(orgId -> requestContext.putValue(MoreClaims.ORG_ID, orgId));
-      Optional.ofNullable(claims.get(MoreClaims.USER_ID, Long.class))
-          .ifPresent(userId -> requestContext.putValue(MoreClaims.USER_ID, userId));
-      requestContext.putValue(MoreClaims.ROLES,
-          Set.copyOf((Collection<String>) claims.get(MoreClaims.ROLES)));
-      requestContext.putValue(MoreClaims.SCOPES,
-          AuthScopeSet.copyOfValues((Collection<String>) claims.get(MoreClaims.SCOPES)));
-    });
-
-    chain.doFilter(request, response);
+    try {
+      AuthContext.populate(jws);
+      chain.doFilter(request, response);
+    } catch (AuthException e) {
+      switch (e.getType()) {
+        case UNAUTHORIZED -> HttpUtils.respond(response, HttpStatus.SC_UNAUTHORIZED, e.getMessage());
+        case FORBIDDEN -> HttpUtils.respond(response, HttpStatus.SC_FORBIDDEN, e.getMessage());
+      }
+    } finally {
+      AuthContext.clear();
+    }
   }
 }

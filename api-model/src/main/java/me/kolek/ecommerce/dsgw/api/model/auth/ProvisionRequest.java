@@ -14,6 +14,3 @@ public class ProvisionRequest {
   private String clientId;
   private String clientType;
 }
-
-
-

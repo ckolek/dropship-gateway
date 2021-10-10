@@ -11,8 +11,6 @@ import me.kolek.ecommerce.dsgw.test.api.AuthApi;
 @RequiredArgsConstructor
 public class Auth {
 
-  private static final Set<String> ADMIN_SCOPES = Set.of("*:org/*/*", "*:/org/*/*/user/*");
-
   private final AuthApi authApi;
   private final TokenHolder tokenHolder;
 
@@ -23,7 +21,7 @@ public class Auth {
 
   @Given("Client is authenticated as admin organization")
   public void authenticatedAsAdminOrg() throws Exception {
-    authenticateAs("admin", ADMIN_SCOPES);
+    authenticateAs("admin", Set.of());
   }
 
   @Given("Client is unauthenticated")

@@ -4,6 +4,7 @@ dependencies {
   api project(':core')
   implementation libraries.bouncycastleProvider
   api libraries.jjwtApi
+  implementation libraries.springBootStarterAop
 
   testImplementation testLibraries.assertjCore
   testImplementation testLibraries.mockitoCore

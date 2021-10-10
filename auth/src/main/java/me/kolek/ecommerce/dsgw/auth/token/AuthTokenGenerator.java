@@ -54,15 +54,15 @@ public class AuthTokenGenerator {
       case USER -> createUserTokenBuilder(credentials);
     };
 
-    validateRequestedScopes(credentials, requestedScopes, tokenBuilder);
+    var grantedScopes = validateRequestedScopes(credentials, requestedScopes, tokenBuilder);
 
     OffsetDateTime issuedAt = OffsetDateTime.now();
     OffsetDateTime expiresAt = issuedAt.plus(authProperties.getMaxTokenExpiration(expiration));
 
     Set<String> roleNames = collectRoleNames(credentials);
-    Set<String> scopeValues = collectScopeValues(requestedScopes);
+    Set<String> scopeValues = collectScopeValues(grantedScopes);
 
-    String token = Jwts.builder()
+    var token = Jwts.builder()
         .setSubject(credentials.getClientId())
         .setIssuer("me.kolek.ecommerce.dsgw")
         .setAudience("me.kolek.ecommerce.dsgw")
@@ -70,11 +70,11 @@ public class AuthTokenGenerator {
         .setExpiration(Date.from(expiresAt.toInstant()))
         .claim(MoreClaims.ROLES, roleNames)
         .claim(MoreClaims.SCOPES, scopeValues)
-        .signWith(privateKey)
-        .compact();
+        .signWith(privateKey);
+    token = tokenBuilder.augmentToken(token);
 
-    return new AuthToken(token, authProperties.getHeaderPrefix().strip().toLowerCase(), expiresAt,
-        scopeValues);
+    return new AuthToken(token.compact(), authProperties.getHeaderPrefix().strip().toLowerCase(),
+        expiresAt, scopeValues);
   }
 
   public String stripPrefix(String token) {
@@ -142,14 +142,18 @@ public class AuthTokenGenerator {
     return new UserTokenBuilder(user);
   }
 
-  private static void validateRequestedScopes(ClientCredentials credentials,
+  private static Set<AuthScope> validateRequestedScopes(ClientCredentials credentials,
       Set<AuthScope> requestedScopes, AuthTokenBuilder tokenBuilder) {
     var scopes = collectScopes(credentials, tokenBuilder);
+    if (requestedScopes.isEmpty()) {
+      return scopes;
+    }
     var difference = Sets.difference(requestedScopes, scopes);
     if (!difference.isEmpty()) {
       throw new AuthException("client is not authorized to access requested scopes: " + difference,
           Type.UNAUTHORIZED);
     }
+    return requestedScopes;
   }
 
   private static Set<AuthScope> collectScopes(ClientCredentials credentials,

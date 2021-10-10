@@ -19,6 +19,7 @@ public class UserTokenBuilder extends AuthTokenBuilder {
     return token
         .claim(MoreClaims.ORG, user.getOrganization().getName())
         .claim(MoreClaims.ORG_ID, user.getOrganization().getCredentials().getId())
+        .claim(MoreClaims.ORG_TYPE, user.getOrganization().getType().name().toLowerCase())
         .claim(MoreClaims.NAME, user.getName())
         .claim(MoreClaims.USER_ID, user.getCredentials().getId());
   }

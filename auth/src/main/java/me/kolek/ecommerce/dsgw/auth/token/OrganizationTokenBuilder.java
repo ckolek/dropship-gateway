@@ -18,6 +18,7 @@ public class OrganizationTokenBuilder extends AuthTokenBuilder {
   public JwtBuilder augmentToken(JwtBuilder token) {
     return token
         .claim(MoreClaims.ORG, organization.getName())
-        .claim(MoreClaims.ORG_ID, organization.getCredentials().getId());
+        .claim(MoreClaims.ORG_ID, organization.getCredentials().getId())
+        .claim(MoreClaims.ORG_TYPE, organization.getType().name().toLowerCase());
   }
 }

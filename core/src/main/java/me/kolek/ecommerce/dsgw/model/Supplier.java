@@ -10,7 +10,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +37,10 @@ public class Supplier {
 
   @Column(name = "name", nullable = false, length = 64)
   private String name;
+
+  @OneToOne
+  @JoinColumn(name = "organization_id")
+  private Organization organization;
 
   @Column(name = "status", nullable = false)
   @Enumerated(EnumType.STRING)

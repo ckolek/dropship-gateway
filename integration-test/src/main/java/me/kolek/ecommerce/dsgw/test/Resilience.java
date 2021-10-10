@@ -4,12 +4,21 @@ import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
 import java.time.Duration;
+import me.kolek.ecommerce.dsgw.test.api.ApiResponseException;
 import me.kolek.ecommerce.dsgw.test.exception.AssertionRuntimeException;
+import org.apache.http.HttpStatus;
 
 public class Resilience {
   private static final RetryConfig CONFIG = RetryConfig.custom()
       .maxAttempts(30)
       .waitDuration(Duration.ofSeconds(1))
+      .retryExceptions(AssertionRuntimeException.class)
+      .retryOnException(e -> {
+        if (e instanceof ApiResponseException are) {
+          return are.getResponse().status() == HttpStatus.SC_NOT_FOUND;
+        }
+        return false;
+      })
       .build();
   private static final RetryRegistry REGISTRY = RetryRegistry.of(CONFIG);
 
@@ -21,7 +30,7 @@ public class Resilience {
   }
 
   public static <T, E extends Exception> T retry(ThrowingSupplier<T, E> supplier) throws E {
-    var retry = REGISTRY.retry("foo", CONFIG);
+    var retry = REGISTRY.retry("test", CONFIG);
     try {
       return Retry.decorateCallable(retry, () -> {
         try {

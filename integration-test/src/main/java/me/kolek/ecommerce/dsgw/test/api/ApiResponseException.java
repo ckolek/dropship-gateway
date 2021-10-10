@@ -1,7 +1,6 @@
 package me.kolek.ecommerce.dsgw.test.api;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 public class ApiResponseException extends Exception {

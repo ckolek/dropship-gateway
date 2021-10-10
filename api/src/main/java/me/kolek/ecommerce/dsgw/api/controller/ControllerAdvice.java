@@ -1,4 +1,4 @@
-package me.kolek.ecommerce.dsgw.api.controller.v1.auth;
+package me.kolek.ecommerce.dsgw.api.controller;
 
 import me.kolek.ecommerce.dsgw.auth.AuthException;
 import me.kolek.ecommerce.dsgw.exception.AlreadyExistsException;
